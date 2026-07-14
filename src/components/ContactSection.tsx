@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { LinkItem } from "@/db/schema";
 import { trackClick } from "@/lib/track";
@@ -111,6 +112,15 @@ export default function ContactSection({ email, socials }: { email: string | nul
         <button type="submit" disabled={status === "sending"} className="btn-primary w-full disabled:opacity-60">
           {status === "sending" ? "Sending…" : "Send message"}
         </button>
+        {/* Art. 13 GDPR: people must be informed at the point of collection. */}
+        <p className="text-center text-[11px] leading-relaxed text-gray-600">
+          Your name, email and message are stored only so I can reply to you. They are never shared or used
+          for advertising. See the{" "}
+          <Link href="/privacy" className="text-gray-500 underline transition-colors hover:text-crimson-bright">
+            Privacy Policy
+          </Link>
+          .
+        </p>
         {status === "sent" && (
           <p className="text-center font-mono text-xs text-green-400">Message sent — I&apos;ll get back to you soon.</p>
         )}

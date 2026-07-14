@@ -151,9 +151,9 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
     stars = Array.from({ length: nStars }, () => ({
       x: Math.random() * w,
       y: Math.random() * h,
-      r: 0.4 + Math.random() * 1.1,
-      a: 0.25 + Math.random() * 0.6,
-      sp: 0.4 + Math.random() * 1.6,
+      r: 0.4 + Math.random() * 1.2,
+      a: 0.3 + Math.random() * 0.65,
+      sp: 0.9 + Math.random() * 2.6,
       ph: Math.random() * TAU,
       cool: Math.random() < 0.18, // a few blue-tinted stars
     }));
@@ -164,15 +164,16 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
       const r = R * (1.12 + Math.pow(Math.random(), 1.6) * 3.7);
       const mid = R * 2;
       const alpha =
-        (0.045 + 0.125 * Math.exp(-Math.pow((r - mid) / (R * 1.25), 2))) * (0.5 + Math.random() * 0.7);
+        (0.07 + 0.2 * Math.exp(-Math.pow((r - mid) / (R * 1.25), 2))) * (0.5 + Math.random() * 0.7);
       return {
         r,
         len: (0.35 + Math.random() * 1.55) * Math.PI,
         start: Math.random() * TAU,
-        speed: ((R * 0.2) / r) * (Math.random() < 0.9 ? 1 : -1) * (0.55 + Math.random() * 0.9),
+        // Orbit period: inner rings ~8s, outer ~25s — clearly visible, still calm.
+        speed: ((R * 0.8) / r) * (Math.random() < 0.9 ? 1 : -1) * (0.6 + Math.random() * 0.9),
         alpha,
-        width: 0.5 + Math.random() * 1.1,
-        red: Math.random() < 0.12,
+        width: 0.6 + Math.random() * 1.3,
+        red: Math.random() < 0.14,
       };
     });
 
@@ -188,9 +189,9 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
       y: a.y * h + (Math.random() - 0.5) * 30,
       s: (w * 0.4 * a.s * (0.85 + Math.random() * 0.3)) / 300,
       rot: (Math.random() - 0.5) * 0.6,
-      rotSp: (Math.random() - 0.5) * 0.016,
-      vx: (Math.random() - 0.5) * 5,
-      vy: (Math.random() - 0.5) * 2.5,
+      rotSp: (Math.random() - 0.5) * 0.05,
+      vx: (Math.random() - 0.5) * 11,
+      vy: (Math.random() - 0.5) * 5,
       a: 0.5 + Math.random() * 0.35,
       ph: Math.random() * TAU,
     }));
@@ -231,7 +232,7 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
       const span = w * 1.4;
       x = ((((x + w * 0.2) % span) + span) % span) - w * 0.2;
       const rot = n.rot + n.rotSp * t;
-      const alpha = n.a * (0.8 + 0.2 * Math.sin(t * 0.18 + n.ph));
+      const alpha = n.a * (0.68 + 0.32 * Math.sin(t * 0.32 + n.ph));
       const size = 300 * n.s;
       ctx.save();
       ctx.globalAlpha = alpha;
@@ -245,7 +246,7 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
 
   function drawStars() {
     for (const s of stars) {
-      const a = s.a * (0.55 + 0.45 * Math.sin(t * s.sp + s.ph));
+      const a = s.a * (0.42 + 0.58 * Math.sin(t * s.sp + s.ph));
       ctx.fillStyle = s.cool ? `rgba(185,200,255,${a})` : `rgba(255,255,255,${a})`;
       ctx.beginPath();
       ctx.arc(s.x + px * 2, s.y + py * 2, s.r, 0, TAU);
@@ -258,7 +259,8 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
     const hi = pass === "back" ? TAU : Math.PI;
     ctx.save();
     ctx.translate(cx + px, cy + py);
-    ctx.rotate(TILT);
+    // Slow wobble of the whole disk — reads as the ring system rotating in 3D.
+    ctx.rotate(TILT + 0.05 * Math.sin(t * 0.13));
     for (const ring of rings) {
       const a0 = (((ring.start + t * ring.speed) % TAU) + TAU) % TAU;
       const segs = arcOverlap(a0, ring.len, lo, hi);
@@ -277,7 +279,7 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
   }
 
   function drawPlanet() {
-    const pr = R * (1 + 0.006 * Math.sin(t * 0.6));
+    const pr = R * (1 + 0.022 * Math.sin(t * 0.75));
     const x = cx + px;
     const y = cy + py;
     const grad = ctx.createRadialGradient(x - pr * 0.45, y - pr * 0.5, pr * 0.1, x, y, pr);
@@ -297,14 +299,16 @@ function startScene(canvas: HTMLCanvasElement, onReady: () => void): () => void 
   }
 
   function flareAngle() {
-    return -2.35 + 0.06 * Math.sin(t * 0.12);
+    // The star slowly sweeps along the planet's rim — the clearest cue that
+    // the whole scene is alive (full sweep ≈ 25s).
+    return -2.35 + 0.3 * Math.sin(t * 0.25);
   }
 
   function drawFlare() {
     const ang = flareAngle();
     const fx = cx + px + Math.cos(ang) * R * 0.96;
     const fy = cy + py + Math.sin(ang) * R * 0.96;
-    const pulse = 0.8 + 0.2 * Math.sin(t * 1.7);
+    const pulse = 0.7 + 0.3 * Math.sin(t * 2.2) + 0.06 * Math.sin(t * 6.1);
 
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
