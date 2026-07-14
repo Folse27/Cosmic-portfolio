@@ -154,14 +154,14 @@ export default function AdminDashboard() {
                 <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "#6b7280", fontSize: 11, fontFamily: "JetBrains Mono" }}
+                  tick={{ fill: "#6b7280", fontSize: 11, fontFamily: "var(--font-mono)" }}
                   tickLine={false}
                   axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
                   minTickGap={24}
                 />
                 <YAxis
                   allowDecimals={false}
-                  tick={{ fill: "#6b7280", fontSize: 11, fontFamily: "JetBrains Mono" }}
+                  tick={{ fill: "#6b7280", fontSize: 11, fontFamily: "var(--font-mono)" }}
                   tickLine={false}
                   axisLine={false}
                 />
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
                     background: "#0b0b0f",
                     border: "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
-                    fontFamily: "JetBrains Mono",
+                    fontFamily: "var(--font-mono)",
                     fontSize: 12,
                   }}
                   labelStyle={{ color: "#9ca3af" }}

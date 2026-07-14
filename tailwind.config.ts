@@ -22,9 +22,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["Unbounded", "system-ui", "sans-serif"],
-        sans: ['"Space Grotesk"', "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
         glow: "0 0 48px -10px rgba(225, 29, 51, 0.45)",
