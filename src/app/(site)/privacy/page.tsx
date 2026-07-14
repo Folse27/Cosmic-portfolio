@@ -161,9 +161,6 @@ export default function PrivacyPage() {
             </span>
           </li>
         </ul>
-        <p className="font-mono text-xs text-gray-600">
-          If you host or store data somewhere else, update this section to match reality.
-        </p>
       </LegalSection>
 
       <LegalSection heading="8. Fonts">
