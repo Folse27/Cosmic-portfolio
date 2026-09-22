@@ -6,6 +6,7 @@ import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Legal Notice (Impressum)",
   description: "Provider identification pursuant to § 5 DDG.",
+  alternates: { canonical: "/impressum" },
 };
 
 /**

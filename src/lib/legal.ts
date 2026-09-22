@@ -20,7 +20,7 @@ export const LEGAL = {
    * "quickly and directly". Email alone is usually accepted, but a phone
    * number is safer. Leave as null to hide the row entirely.
    */
-  phone: +49 000 0000000,
+  phone: "+49 000 0000000" as string | null,
 
   /**
    * VAT ID (Umsatzsteuer-Identifikationsnummer), if you have one.
