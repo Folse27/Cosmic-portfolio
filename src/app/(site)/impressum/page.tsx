@@ -76,7 +76,7 @@ export default function ImpressumPage() {
         </p>
       </LegalSection>
 
-      <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-600">
+      <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-500">
         See also the{" "}
         <Link href="/privacy" className="text-crimson-bright transition-colors hover:underline">
           Privacy Policy
