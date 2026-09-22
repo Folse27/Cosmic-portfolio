@@ -40,7 +40,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
 
       <div className="flex flex-1 flex-col gap-3 p-6">
         {project.dateLabel && (
-          <p className="font-mono text-[11px] uppercase tracking-widest text-crimson">{project.dateLabel}</p>
+          <p className="font-mono text-[11px] uppercase tracking-widest text-crimson-text">{project.dateLabel}</p>
         )}
         <h3 className="font-display text-lg leading-snug text-white transition-colors group-hover:text-crimson-bright">
           {project.title}
@@ -54,7 +54,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
         </div>
 
         <span className="pt-1 font-mono text-xs text-gray-500 transition-colors group-hover:text-crimson-bright">
-          View case <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          See how it works <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
         </span>
       </div>
     </Link>

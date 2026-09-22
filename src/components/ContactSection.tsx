@@ -113,7 +113,7 @@ export default function ContactSection({ email, socials }: { email: string | nul
           {status === "sending" ? "Sending…" : "Send message"}
         </button>
         {/* Art. 13 GDPR: people must be informed at the point of collection. */}
-        <p className="text-center text-[11px] leading-relaxed text-gray-600">
+        <p className="text-center text-[11px] leading-relaxed text-gray-500">
           Your name, email and message are stored only so I can reply to you. They are never shared or used
           for advertising. See the{" "}
           <Link href="/privacy" className="text-gray-500 underline transition-colors hover:text-crimson-bright">
