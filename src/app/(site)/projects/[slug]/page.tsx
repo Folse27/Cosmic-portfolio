@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 /** Mono red mini-heading used for each case-study section. */
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-crimson">{children}</p>;
+  return <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-crimson-text">{children}</p>;
 }
 
 export default async function ProjectPage({ params }: Params) {
@@ -41,7 +41,7 @@ export default async function ProjectPage({ params }: Params) {
 
         <div className="mt-8">
           {project.dateLabel && (
-            <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-crimson">{project.dateLabel}</p>
+            <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-crimson-text">{project.dateLabel}</p>
           )}
           <h1 className="font-display text-3xl leading-tight text-white md:text-5xl">{project.title}</h1>
           {project.tags.length > 0 && (
@@ -65,14 +65,14 @@ export default async function ProjectPage({ params }: Params) {
       <div className="mt-14 space-y-14">
         {project.description && (
           <Reveal>
-            <SectionLabel>Description</SectionLabel>
+            <SectionLabel>What it is</SectionLabel>
             <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.description}</p>
           </Reveal>
         )}
 
         {project.problems.length > 0 && (
           <Reveal>
-            <SectionLabel>Business problems</SectionLabel>
+            <SectionLabel>The problem</SectionLabel>
             <ol className="space-y-4">
               {project.problems.map((problem, i) => (
                 <li key={i} className="flex gap-4">
@@ -86,14 +86,14 @@ export default async function ProjectPage({ params }: Params) {
 
         {project.solution && (
           <Reveal>
-            <SectionLabel>Solution</SectionLabel>
+            <SectionLabel>How it helps</SectionLabel>
             <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.solution}</p>
           </Reveal>
         )}
 
         {project.outcomes.length > 0 && (
           <Reveal>
-            <SectionLabel>Outcomes</SectionLabel>
+            <SectionLabel>The results</SectionLabel>
             <ul className="space-y-3">
               {project.outcomes.map((outcome, i) => (
                 <li key={i} className="flex gap-3 leading-relaxed text-gray-300">
@@ -108,7 +108,7 @@ export default async function ProjectPage({ params }: Params) {
         {project.note && (
           <Reveal>
             <div className="rounded-2xl border border-crimson/30 bg-crimson/5 p-6">
-              <SectionLabel>Important note</SectionLabel>
+              <SectionLabel>Good to know</SectionLabel>
               <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.note}</p>
             </div>
           </Reveal>
