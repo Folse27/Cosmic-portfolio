@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer({ name }: { name: string }) {
   return (
     <footer className="border-t border-white/5 py-10">
-      <div className="mx-auto flex max-w-site flex-col items-center justify-between gap-4 px-6 font-mono text-xs text-gray-600 sm:flex-row">
+      <div className="mx-auto flex max-w-site flex-col items-center justify-between gap-4 px-6 font-mono text-xs text-gray-500 sm:flex-row">
         <p>© {new Date().getFullYear()} {name}</p>
 
         {/* German law requires these to be reachable from every page. */}
