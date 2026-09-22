@@ -161,6 +161,9 @@ export default function PrivacyPage() {
             </span>
           </li>
         </ul>
+        <p className="font-mono text-xs text-gray-500">
+          If you host or store data somewhere else, update this section to match reality.
+        </p>
       </LegalSection>
 
       <LegalSection heading="8. Fonts">
@@ -228,7 +231,7 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-600">
+      <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-500">
         Last updated: {LEGAL.lastUpdated} ·{" "}
         <Link href="/impressum" className="text-crimson-bright transition-colors hover:underline">
           Legal Notice
