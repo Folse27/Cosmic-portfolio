@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { getProjectBySlug, getSettings } from "@/lib/data";
+import { OG_IMAGE } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +13,38 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const [project, settings] = await Promise.all([getProjectBySlug(slug), getSettings()]);
-  if (!project) return { title: "Project not found" };
+  if (!project) return { title: "Project not found", robots: { index: false } };
+
+  const title = `${project.title} — ${settings.name}`;
+  const description = project.summary;
+  const url = `/projects/${project.slug}`;
+
+  // The project's own cover image makes a far better preview card than the
+  // generic hero. Dimensions are omitted for it because uploads vary in size,
+  // and declaring the wrong ones makes platforms crop badly.
+  const images = project.coverImage
+    ? [{ url: project.coverImage, alt: project.title }]
+    : [{ url: OG_IMAGE, width: 1200, height: 630, alt: title }];
+
   return {
-    title: `${project.title} — ${settings.name}`,
-    description: project.summary,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      siteName: settings.name,
+      title,
+      description,
+      locale: "en_US",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: images.map((image) => image.url),
+    },
   };
 }
 

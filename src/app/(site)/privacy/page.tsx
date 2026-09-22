@@ -6,6 +6,7 @@ import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "How this website handles personal data, pursuant to Art. 13 GDPR.",
+  alternates: { canonical: "/privacy" },
 };
 
 /**

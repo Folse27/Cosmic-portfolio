@@ -84,12 +84,13 @@ export default function CosmicHero({ fallbackSrc }: { fallbackSrc: string }) {
     <>
       <div className="absolute inset-0 overflow-hidden bg-void" aria-hidden="true">
         {/* Only covers the moment before the canvas paints, and JS-off visitors.
-            object-top keeps the planet in frame when a wide screen crops this
-            portrait image. */}
+            object-center keeps the planet in frame when a wide screen crops this
+            portrait image: the planet sits at 44% of the image height, so a
+            top-anchored crop on a desktop viewport cuts it off entirely. */}
         <img
           src={fallbackSrc}
           alt=""
-          className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-1000 ${
+          className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${
             ready ? "opacity-0" : "opacity-90"
           }`}
           draggable={false}

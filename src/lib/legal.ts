@@ -8,7 +8,7 @@ export const LEGAL = {
    */
   address: [
     "Ludgeristraße 25",
-    "47057 Duisurg",
+    "47057 Duisburg",
     "Germany",
   ],
 
@@ -20,7 +20,7 @@ export const LEGAL = {
    * "quickly and directly". Email alone is usually accepted, but a phone
    * number is safer. Leave as null to hide the row entirely.
    */
-  phone: +4916091996307,
+  phone: "+49 160 91996307" as string | null,
 
   /**
    * VAT ID (Umsatzsteuer-Identifikationsnummer), if you have one.
