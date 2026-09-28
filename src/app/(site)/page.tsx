@@ -61,8 +61,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── About ────────────────────────────────────────────────────── */}
-      <section id="about" className="scroll-mt-16 py-24 md:py-32">
-        <div className="mx-auto max-w-site px-6">
+      <section className="py-24 md:py-32">
+        <div id="about" className="anchor-target mx-auto max-w-site px-6">
           <SectionHeading kicker="About" title="Behind the console" />
           <div className="grid items-start gap-12 md:grid-cols-[minmax(0,320px)_1fr]">
             <Reveal>
@@ -106,8 +106,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Projects ─────────────────────────────────────────────────── */}
-      <section id="projects" className="scroll-mt-16 py-24 md:py-32">
-        <div className="mx-auto max-w-site px-6">
+      <section className="py-24 md:py-32">
+        <div id="projects" className="anchor-target mx-auto max-w-site px-6">
           <SectionHeading kicker="Selected work" title="Projects" />
           {projects.length === 0 ? (
             <p className="font-mono text-sm text-gray-500">
@@ -126,8 +126,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Contact ──────────────────────────────────────────────────── */}
-      <section id="contact" className="scroll-mt-16 py-24 md:py-32">
-        <div className="mx-auto max-w-site px-6">
+      <section className="py-24 md:py-32">
+        <div id="contact" className="anchor-target mx-auto max-w-site px-6">
           <SectionHeading kicker="Contact" title="Open a channel" />
           <Reveal>
             <ContactSection email={settings.email} socials={settings.socials} />
