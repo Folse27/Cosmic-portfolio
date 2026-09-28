@@ -4,6 +4,11 @@
 
 /* ── Base ──────────────────────────────────────────────────────────────── */
 
+:root {
+  /* Height of the fixed header in Nav.tsx: h-16 (4rem) + its 1px bottom border. */
+  --nav-h: calc(4rem + 1px);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -62,6 +67,14 @@ body {
   }
   .chip {
     @apply inline-flex items-center rounded-full border border-white/10 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-gray-400;
+  }
+
+  /* Target of a hash link (#about, #projects, #contact). Put it on the element
+     whose top edge is the first line of content, not on the <section> — the
+     section's own top padding would otherwise land as a gap under the header.
+     Leaves the element clear of the fixed header plus a little breathing room. */
+  .anchor-target {
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
   }
 
   /* Admin form controls */
