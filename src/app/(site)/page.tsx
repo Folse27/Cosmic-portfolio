@@ -126,8 +126,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── Contact ──────────────────────────────────────────────────── */}
-      <section className="py-24 md:py-32">
-        <div id="contact" className="anchor-target mx-auto max-w-site px-6">
+      <section className="pt-24 md:pt-32">
+        <div id="contact" className="anchor-room anchor-target mx-auto max-w-site px-6 pb-24 md:pb-32">
           <SectionHeading kicker="Contact" title="Open a channel" />
           <Reveal>
             <ContactSection email={settings.email} socials={settings.socials} />
