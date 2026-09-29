@@ -77,6 +77,18 @@ body {
     scroll-margin-top: calc(var(--nav-h) + 1rem);
   }
 
+  /* Companion to .anchor-target for the LAST section on a page. Without it the
+     document ends before that section's heading can reach the top, so the nav
+     link stops short and leaves a gap. Reserving a viewport's worth of height
+     guarantees the scroll can complete; the footer still follows at the very
+     bottom, after the reserved space. Inactive whenever the section is already
+     taller than the viewport — then the content supplies the room itself.
+     100lvh, not svh/dvh: the guarantee has to hold in the browser's *tallest*
+     state, or a retracting mobile toolbar would bring the gap back. */
+  .anchor-room {
+    min-height: calc(100lvh - var(--nav-h) - 1rem);
+  }
+
   /* Admin form controls */
   .input {
     @apply w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-gray-200 outline-none transition-colors placeholder:text-gray-600 focus:border-crimson/60;
