@@ -43,7 +43,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const settings = await getSettings();
   return (
     <>
-      <Nav name={settings.name} />
+      <Nav name={settings.navName || settings.name} />
       <main>{children}</main>
       <Footer name={settings.name} />
     </>

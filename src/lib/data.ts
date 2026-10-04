@@ -9,6 +9,7 @@ import { projects, siteSettings, type Project, type SiteSettings } from "@/db/sc
 export const DEFAULT_SETTINGS: SiteSettings = {
   id: "singleton",
   name: "[YOUR NAME]",
+  navName: null,
   title: "[YOUR TITLE / TAGLINE]",
   tagline: "Placeholder tagline — run `npm run db:seed`, then edit everything in /admin.",
   bio: "Placeholder bio. Sign in at /admin and open Settings to replace this text.",

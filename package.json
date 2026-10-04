@@ -5,12 +5,13 @@
   "description": "Personal portfolio with built-in CMS and first-party analytics. Black & deep-red cosmic theme.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/ensure-schema.ts && next build",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:ensure": "tsx scripts/ensure-schema.ts"
   },
   "engines": {
     "node": ">=20.9"

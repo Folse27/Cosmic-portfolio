@@ -35,6 +35,7 @@ export async function PUT(req: Request) {
 
   const values = {
     name: str(body.name, DEFAULT_SETTINGS.name, 120).trim() || DEFAULT_SETTINGS.name,
+    navName: strOrNull(body.navName, 120)?.trim() ?? null,
     title: str(body.title, DEFAULT_SETTINGS.title, 200).trim(),
     tagline: str(body.tagline, "", 500).trim(),
     bio: str(body.bio, "").trim(),

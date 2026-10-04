@@ -18,6 +18,7 @@ function socialsFromText(s: string): LinkItem[] {
 export default function AdminSettingsPage() {
   const [form, setForm] = useState({
     name: "",
+    navName: "",
     title: "",
     tagline: "",
     bio: "",
@@ -35,6 +36,7 @@ export default function AdminSettingsPage() {
       .then((s: SiteSettings) => {
         setForm({
           name: s.name,
+          navName: s.navName ?? "",
           title: s.title,
           tagline: s.tagline,
           bio: s.bio,
@@ -85,6 +87,10 @@ export default function AdminSettingsPage() {
           <div>
             <label className="label">Name (hero headline)</label>
             <input className="input" value={form.name} onChange={set("name")} />
+          </div>
+          <div>
+            <label className="label">Header label (top left) — blank uses the name</label>
+            <input className="input" value={form.navName} placeholder={form.name} onChange={set("navName")} />
           </div>
           <div>
             <label className="label">Title / role (above the name)</label>

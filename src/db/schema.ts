@@ -33,6 +33,7 @@ export const adminUsers = pgTable("admin_users", {
 export const siteSettings = pgTable("site_settings", {
   id: text("id").primaryKey(), // always "singleton"
   name: text("name").notNull().default("[YOUR NAME]"),
+  navName: text("nav_name"), // top-left header label; null = use `name`
   title: text("title").notNull().default("[YOUR TITLE / TAGLINE]"),
   tagline: text("tagline").notNull().default(""),
   bio: text("bio").notNull().default(""),
