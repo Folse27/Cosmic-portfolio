@@ -5,7 +5,7 @@ import type { Project } from "@/db/schema";
 import { trackClick } from "@/lib/track";
 
 /** Cover fallback when a project has no image: a quiet cosmic gradient. */
-function PlaceholderCover({ index }: { index: number }) {
+function PlaceholderCover() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[radial-gradient(120%_120%_at_20%_0%,#1a0a10_0%,#0a0a0d_45%,#050506_100%)]">
       <div className="absolute -right-10 -top-14 h-44 w-44 rounded-full bg-crimson/15 blur-3xl" />
@@ -13,19 +13,16 @@ function PlaceholderCover({ index }: { index: number }) {
         <ellipse cx="50" cy="32" rx="42" ry="12" fill="none" stroke="#e11d33" strokeWidth="0.4" transform="rotate(-10 50 32)" />
         <ellipse cx="50" cy="32" rx="30" ry="8" fill="none" stroke="#8b8f9c" strokeWidth="0.3" transform="rotate(-10 50 32)" />
       </svg>
-      <span className="font-mono text-4xl text-white/15">{String(index + 1).padStart(2, "0")}</span>
     </div>
   );
 }
 
 export default function ProjectCard({
   project,
-  index,
   href,
   seeHow,
 }: {
   project: Project;
-  index: number;
   href: string;
   seeHow: string;
 }) {
@@ -44,7 +41,7 @@ export default function ProjectCard({
             loading="lazy"
           />
         ) : (
-          <PlaceholderCover index={index} />
+          <PlaceholderCover />
         )}
       </div>
 

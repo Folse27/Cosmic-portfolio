@@ -12,3 +12,6 @@ next-env.d.ts
 .env.txt
 
 .DS_Store
+
+# review documents
+*.docx

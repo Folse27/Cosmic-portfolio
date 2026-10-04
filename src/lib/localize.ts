@@ -29,6 +29,7 @@ export const SETTINGS_TEXT_SPEC: Record<keyof SettingsText, FieldSpec> = {
   tagline: { max: 500 },
   bio: { max: 20000 },
   metaDescription: { max: 300 },
+  skills: { list: true, maxItems: 60, maxLen: 60 },
 };
 
 export const PROJECT_TEXT_SPEC: Record<keyof ProjectText, FieldSpec> = {

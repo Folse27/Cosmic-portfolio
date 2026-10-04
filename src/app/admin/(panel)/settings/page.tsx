@@ -17,19 +17,33 @@ function socialsFromText(s: string): LinkItem[] {
     .filter((l) => l.label && l.url);
 }
 
-const EMPTY_TEXT: SettingsText = { title: "", tagline: "", bio: "", metaDescription: "" };
+/** Translatable fields as the form edits them: skills are comma-separated text. */
+type TextForm = Record<keyof SettingsText, string>;
+const EMPTY_TEXT: TextForm = { title: "", tagline: "", bio: "", metaDescription: "", skills: "" };
 const TEXT_KEYS = Object.keys(EMPTY_TEXT) as (keyof SettingsText)[];
+
+// Picks only the translatable keys, so other settings never ride along into the text state.
+const toTextForm = (t: Partial<SettingsText> | undefined): TextForm => ({
+  title: t?.title ?? "",
+  tagline: t?.tagline ?? "",
+  bio: t?.bio ?? "",
+  metaDescription: t?.metaDescription ?? "",
+  skills: (t?.skills ?? []).join(", "),
+});
+const fromTextForm = (f: TextForm): SettingsText => ({
+  ...f,
+  skills: f.skills.split(",").map((s) => s.trim()).filter(Boolean),
+});
 
 export default function AdminSettingsPage() {
   const [form, setForm] = useState({
     name: "",
     navName: "",
     email: "",
-    skills: "",
     socials: "",
   });
   // Translatable text, one copy per language. "en" is the base columns.
-  const [text, setText] = useState<Record<Locale, SettingsText>>({ en: EMPTY_TEXT, de: EMPTY_TEXT, ru: EMPTY_TEXT });
+  const [text, setText] = useState<Record<Locale, TextForm>>({ en: EMPTY_TEXT, de: EMPTY_TEXT, ru: EMPTY_TEXT });
   const [lang, setLang] = useState<Locale>("en");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
@@ -42,13 +56,12 @@ export default function AdminSettingsPage() {
           name: s.name,
           navName: s.navName ?? "",
           email: s.email ?? "",
-          skills: s.skills.join(", "),
           socials: socialsToText(s.socials),
         });
         setText({
-          en: { title: s.title, tagline: s.tagline, bio: s.bio, metaDescription: s.metaDescription },
-          de: { ...EMPTY_TEXT, ...s.translations?.de },
-          ru: { ...EMPTY_TEXT, ...s.translations?.ru },
+          en: toTextForm(s),
+          de: toTextForm(s.translations?.de),
+          ru: toTextForm(s.translations?.ru),
         });
         setProfileImage(s.profileImage);
         setStatus("idle");
@@ -79,10 +92,9 @@ export default function AdminSettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        ...text.en,
-        translations: { de: text.de, ru: text.ru },
+        ...fromTextForm(text.en),
+        translations: { de: fromTextForm(text.de), ru: fromTextForm(text.ru) },
         profileImage,
-        skills: form.skills.split(",").map((s) => s.trim()).filter(Boolean),
         socials: socialsFromText(form.socials),
       }),
     });
@@ -135,8 +147,8 @@ export default function AdminSettingsPage() {
           <textarea className="input min-h-40 resize-y" {...tField("bio")} />
         </div>
         <div>
-          <label className="label">Skills / tech stack — comma separated</label>
-          <input className="input" value={form.skills} onChange={set("skills")} />
+          <label className="label">Skills / tech stack — comma separated<LangBadge lang={lang} /></label>
+          <input className="input" {...tField("skills")} />
         </div>
       </div>
 

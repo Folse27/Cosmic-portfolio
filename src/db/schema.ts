@@ -19,7 +19,7 @@ export type LinkItem = { label: string; url: string };
  * base; a missing or empty translated field falls back to it.
  */
 export type Translations<T> = Partial<Record<"de" | "ru", Partial<T>>>;
-export type SettingsText = { title: string; tagline: string; bio: string; metaDescription: string };
+export type SettingsText = { title: string; tagline: string; bio: string; metaDescription: string; skills: string[] };
 export type ProjectText = {
   title: string;
   summary: string;

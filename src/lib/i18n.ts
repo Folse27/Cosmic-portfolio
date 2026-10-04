@@ -88,7 +88,7 @@ export type Dict = typeof en;
 const de: Dict = {
   nav: { about: "Über mich", projects: "Projekte", contact: "Kontakt", language: "Sprache" },
   hero: { viewProjects: "Projekte ansehen", contactMe: "Kontakt aufnehmen", scrollToAbout: "Zum Abschnitt „Über mich“ scrollen" },
-  about: { kicker: "Über mich", title: "Hinter der Konsole", skills: "Tech-Stack & Skills" },
+  about: { kicker: "Über mich", title: "Der Mensch hinter den Projekten", skills: "Technologien & Fähigkeiten" },
   projects: { kicker: "Ausgewählte Arbeiten", title: "Projekte", more: "Weitere Projekte", empty: "Noch keine Projekte." },
   card: { seeHow: "So funktioniert’s" },
   project: {
@@ -96,7 +96,7 @@ const de: Dict = {
     whatItIs: "Worum es geht",
     problem: "Das Problem",
     howItHelps: "Wie es hilft",
-    results: "Die Ergebnisse",
+    results: "Was es bringt",
     goodToKnow: "Gut zu wissen",
     gallery: "Galerie",
     links: "Links",
@@ -108,7 +108,7 @@ const de: Dict = {
   contact: {
     kicker: "Kontakt",
     title: "Schreiben Sie mir",
-    intro: "Sie suchen einen Auszubildenden für die Anwendungsentwicklung oder möchten eine Aufgabe automatisieren? Ich antworte auf jede Nachricht.",
+    intro: "Sie bilden Fachinformatiker für Anwendungsentwicklung aus? Dann freue ich mich über eine Einladung zum Gespräch. Sie möchten in Ihrem Unternehmen eine Aufgabe automatisieren? Schreiben Sie mir, worum es geht. Ich antworte auf jede Nachricht.",
     emailMe: "E-Mail schreiben",
     name: "Name",
     namePlaceholder: "Ihr Name",
@@ -130,7 +130,7 @@ const de: Dict = {
 const ru: Dict = {
   nav: { about: "Обо мне", projects: "Проекты", contact: "Контакты", language: "Язык" },
   hero: { viewProjects: "Смотреть проекты", contactMe: "Связаться", scrollToAbout: "Перейти к разделу «Обо мне»" },
-  about: { kicker: "Обо мне", title: "За консолью", skills: "Стек и навыки" },
+  about: { kicker: "Обо мне", title: "Кто стоит за проектами", skills: "Что я делаю" },
   projects: { kicker: "Избранные работы", title: "Проекты", more: "Другие проекты", empty: "Проектов пока нет." },
   card: { seeHow: "Как это работает" },
   project: {
@@ -138,7 +138,7 @@ const ru: Dict = {
     whatItIs: "Что это",
     problem: "Проблема",
     howItHelps: "Как это помогает",
-    results: "Результаты",
+    results: "Что это даёт",
     goodToKnow: "Важно знать",
     gallery: "Галерея",
     links: "Ссылки",

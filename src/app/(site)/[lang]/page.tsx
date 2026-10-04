@@ -24,12 +24,10 @@ function ProjectGrid({
   projects,
   lang,
   seeHow,
-  offset = 0,
 }: {
   projects: Project[];
   lang: Locale;
   seeHow: string;
-  offset?: number;
 }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -37,7 +35,6 @@ function ProjectGrid({
         <Reveal key={project.id} delay={(i % 3) * 90}>
           <ProjectCard
             project={project}
-            index={offset + i}
             href={localePath(lang, `/projects/${project.slug}`)}
             seeHow={seeHow}
           />
@@ -159,7 +156,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               <Reveal className="mb-8">
                 <h3 className="font-display text-xl text-white md:text-2xl">{t.projects.more}</h3>
               </Reveal>
-              <ProjectGrid projects={more} lang={lang} seeHow={t.card.seeHow} offset={main.length} />
+              <ProjectGrid projects={more} lang={lang} seeHow={t.card.seeHow} />
             </div>
           )}
         </div>
