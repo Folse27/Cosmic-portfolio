@@ -3,7 +3,10 @@ import CosmicHero from "@/components/CosmicHero";
 import ProjectCard from "@/components/ProjectCard";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
+import type { Project } from "@/db/schema";
 import { getPublishedProjects, getSettings } from "@/lib/data";
+import { getDict, localePath, type Locale } from "@/lib/i18n";
+import { localizeProject, localizeSettings } from "@/lib/localize";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +20,45 @@ function SectionHeading({ kicker, title }: { kicker: string; title: string }) {
   );
 }
 
-export default async function HomePage() {
-  const [settings, projects] = await Promise.all([getSettings(), getPublishedProjects()]);
+function ProjectGrid({
+  projects,
+  lang,
+  seeHow,
+  offset = 0,
+}: {
+  projects: Project[];
+  lang: Locale;
+  seeHow: string;
+  offset?: number;
+}) {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project, i) => (
+        <Reveal key={project.id} delay={(i % 3) * 90}>
+          <ProjectCard
+            project={project}
+            index={offset + i}
+            href={localePath(lang, `/projects/${project.slug}`)}
+            seeHow={seeHow}
+          />
+        </Reveal>
+      ))}
+    </div>
+  );
+}
+
+export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
+  // The [lang] layout has already rejected unknown languages.
+  const lang = (await params).lang as Locale;
+  const t = getDict(lang);
+  const [rawSettings, rawProjects] = await Promise.all([getSettings(), getPublishedProjects()]);
+  const settings = localizeSettings(rawSettings, lang);
+  const projects = rawProjects.map((p) => localizeProject(p, lang));
+  // Featured projects lead; the rest go under "More projects". With nothing
+  // featured, every project stays in the main grid.
+  const featured = projects.filter((p) => p.featured);
+  const main = featured.length ? featured : projects;
+  const more = featured.length ? projects.filter((p) => !p.featured) : [];
   const bioParagraphs = settings.bio.split(/\n\s*\n/).filter(Boolean);
 
   return (
@@ -39,11 +79,11 @@ export default async function HomePage() {
               {settings.tagline}
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <TrackedLink href="/#projects" trackId="cta:view-projects" className="btn-primary">
-                View projects
+              <TrackedLink href={localePath(lang, "/#projects")} trackId="cta:view-projects" className="btn-primary">
+                {t.hero.viewProjects}
               </TrackedLink>
-              <TrackedLink href="/#contact" trackId="cta:contact" className="btn-ghost">
-                Contact me
+              <TrackedLink href={localePath(lang, "/#contact")} trackId="cta:contact" className="btn-ghost">
+                {t.hero.contactMe}
               </TrackedLink>
             </div>
           </Reveal>
@@ -51,7 +91,7 @@ export default async function HomePage() {
 
         <a
           href="#about"
-          aria-label="Scroll to about section"
+          aria-label={t.hero.scrollToAbout}
           className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 animate-bounce text-gray-500 transition-colors hover:text-crimson-bright"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -63,18 +103,18 @@ export default async function HomePage() {
       {/* ── About ────────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32">
         <div id="about" className="anchor-target mx-auto max-w-site px-6">
-          <SectionHeading kicker="About" title="Behind the console" />
+          <SectionHeading kicker={t.about.kicker} title={t.about.title} />
           <div className="grid items-start gap-12 md:grid-cols-[minmax(0,320px)_1fr]">
             <Reveal>
               <div className="relative mx-auto aspect-square w-full max-w-xs overflow-hidden rounded-2xl border border-white/10 bg-panel shadow-glow-sm">
                 {settings.profileImage ? (
                   <img src={settings.profileImage} alt={settings.name} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-gray-500">
-                    <div className="h-20 w-20 rounded-full border border-crimson/40 bg-crimson/10" />
-                    <p className="px-6 text-center font-mono text-[11px] uppercase tracking-wider">
-                      Profile photo — set it in /admin
-                    </p>
+                  // No photo yet: a monogram, so visitors never see an admin hint.
+                  <div className="flex h-full w-full items-center justify-center">
+                    <div className="flex h-28 w-28 items-center justify-center rounded-full border border-crimson/40 bg-crimson/10 font-display text-4xl text-white/80">
+                      {settings.name.trim().charAt(0)}
+                    </div>
                   </div>
                 )}
               </div>
@@ -87,7 +127,7 @@ export default async function HomePage() {
               </div>
               {settings.skills.length > 0 && (
                 <div className="mt-8">
-                  <p className="label">Tech stack &amp; skills</p>
+                  <p className="label">{t.about.skills}</p>
                   <div className="flex flex-wrap gap-2">
                     {settings.skills.map((skill) => (
                       <span
@@ -108,18 +148,18 @@ export default async function HomePage() {
       {/* ── Projects ─────────────────────────────────────────────────── */}
       <section className="py-24 md:py-32">
         <div id="projects" className="anchor-target mx-auto max-w-site px-6">
-          <SectionHeading kicker="Selected work" title="Projects" />
+          <SectionHeading kicker={t.projects.kicker} title={t.projects.title} />
           {projects.length === 0 ? (
-            <p className="font-mono text-sm text-gray-500">
-              No projects yet — run <code className="text-crimson-bright">npm run db:seed</code> or add one in /admin.
-            </p>
+            <p className="font-mono text-sm text-gray-500">{t.projects.empty}</p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project, i) => (
-                <Reveal key={project.id} delay={(i % 3) * 90}>
-                  <ProjectCard project={project} index={i} />
-                </Reveal>
-              ))}
+            <ProjectGrid projects={main} lang={lang} seeHow={t.card.seeHow} />
+          )}
+          {more.length > 0 && (
+            <div className="mt-20">
+              <Reveal className="mb-8">
+                <h3 className="font-display text-xl text-white md:text-2xl">{t.projects.more}</h3>
+              </Reveal>
+              <ProjectGrid projects={more} lang={lang} seeHow={t.card.seeHow} offset={main.length} />
             </div>
           )}
         </div>
@@ -128,9 +168,14 @@ export default async function HomePage() {
       {/* ── Contact ──────────────────────────────────────────────────── */}
       <section className="pt-24 md:pt-32">
         <div id="contact" className="anchor-room anchor-target mx-auto max-w-site px-6 pb-24 md:pb-32">
-          <SectionHeading kicker="Contact" title="Open a channel" />
+          <SectionHeading kicker={t.contact.kicker} title={t.contact.title} />
           <Reveal>
-            <ContactSection email={settings.email} socials={settings.socials} />
+            <ContactSection
+              email={settings.email}
+              socials={settings.socials}
+              labels={t.contact}
+              privacyHref={localePath(lang, "/privacy")}
+            />
           </Reveal>
         </div>
       </section>

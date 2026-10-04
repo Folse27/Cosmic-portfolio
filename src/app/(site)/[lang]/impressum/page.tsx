@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage, LegalSection, PlaceholderWarning } from "@/components/Legal";
+import { localePath, type Locale } from "@/lib/i18n";
 import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export const metadata: Metadata = {
  * Germany under § 5 DDG (which replaced § 5 TMG in May 2024).
  * Must be reachable from every page; the footer link handles that.
  */
-export default function ImpressumPage() {
+export default async function ImpressumPage({ params }: { params: Promise<{ lang: string }> }) {
+  // The [lang] layout has already rejected unknown languages.
+  const lang = (await params).lang as Locale;
   return (
     <LegalPage kicker="Impressum" title="Legal Notice">
       {ADDRESS_INCOMPLETE && (
@@ -79,7 +82,7 @@ export default function ImpressumPage() {
 
       <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-500">
         See also the{" "}
-        <Link href="/privacy" className="text-crimson-bright transition-colors hover:underline">
+        <Link href={localePath(lang, "/privacy")} className="text-crimson-bright transition-colors hover:underline">
           Privacy Policy
         </Link>
         .

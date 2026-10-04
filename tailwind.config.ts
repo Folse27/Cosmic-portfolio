@@ -33,7 +33,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
-        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "var(--font-sans-cyr)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {

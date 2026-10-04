@@ -4,20 +4,33 @@ import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { getProjectBySlug, getSettings } from "@/lib/data";
+import { getDict, isLocale, localeAlternates, localePath, LOCALES, OG_LOCALE } from "@/lib/i18n";
+import { localizeProject } from "@/lib/localize";
 import { OG_IMAGE } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-type Params = { params: Promise<{ slug: string }> };
+type Params = { params: Promise<{ lang: string; slug: string }> };
+
+/** Resolves the route params to a project in the requested language, or null. */
+async function load(params: Params["params"]) {
+  const { lang, slug } = await params;
+  if (!isLocale(lang)) return null;
+  const project = await getProjectBySlug(slug);
+  return project ? { lang, project: localizeProject(project, lang) } : null;
+}
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { slug } = await params;
-  const [project, settings] = await Promise.all([getProjectBySlug(slug), getSettings()]);
-  if (!project) return { title: "Project not found", robots: { index: false } };
+  const [loaded, settings] = await Promise.all([load(params), getSettings()]);
+  if (!loaded) {
+    const { lang } = await params;
+    return { title: getDict(isLocale(lang) ? lang : "de").project.notFound, robots: { index: false } };
+  }
+  const { lang, project } = loaded;
 
   const title = `${project.title} — ${settings.name}`;
   const description = project.summary;
-  const url = `/projects/${project.slug}`;
+  const path = `/projects/${project.slug}`;
 
   // The project's own cover image makes a far better preview card than the
   // generic hero. Dimensions are omitted for it because uploads vary in size,
@@ -29,14 +42,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: localeAlternates(lang, path),
     openGraph: {
       type: "article",
-      url,
+      url: localePath(lang, path),
       siteName: settings.name,
       title,
       description,
-      locale: "en_US",
+      locale: OG_LOCALE[lang],
+      alternateLocale: LOCALES.filter((l) => l !== lang).map((l) => OG_LOCALE[l]),
       images,
     },
     twitter: {
@@ -54,18 +68,20 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default async function ProjectPage({ params }: Params) {
-  const { slug } = await params;
-  const project = await getProjectBySlug(slug);
-  if (!project) notFound();
+  const loaded = await load(params);
+  if (!loaded) notFound();
+  const { lang, project } = loaded;
+  const t = getDict(lang).project;
+  const home = (hash: string) => localePath(lang, `/#${hash}`);
 
   return (
     <article className="mx-auto max-w-4xl px-6 pb-24 pt-28 md:pt-32">
       <Reveal>
         <Link
-          href="/#projects"
+          href={home("projects")}
           className="font-mono text-xs uppercase tracking-wider text-gray-500 transition-colors hover:text-crimson-bright"
         >
-          ← All projects
+          {t.allProjects}
         </Link>
 
         <div className="mt-8">
@@ -94,14 +110,14 @@ export default async function ProjectPage({ params }: Params) {
       <div className="mt-14 space-y-14">
         {project.description && (
           <Reveal>
-            <SectionLabel>What it is</SectionLabel>
+            <SectionLabel>{t.whatItIs}</SectionLabel>
             <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.description}</p>
           </Reveal>
         )}
 
         {project.problems.length > 0 && (
           <Reveal>
-            <SectionLabel>The problem</SectionLabel>
+            <SectionLabel>{t.problem}</SectionLabel>
             <ol className="space-y-4">
               {project.problems.map((problem, i) => (
                 <li key={i} className="flex gap-4">
@@ -115,14 +131,14 @@ export default async function ProjectPage({ params }: Params) {
 
         {project.solution && (
           <Reveal>
-            <SectionLabel>How it helps</SectionLabel>
+            <SectionLabel>{t.howItHelps}</SectionLabel>
             <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.solution}</p>
           </Reveal>
         )}
 
         {project.outcomes.length > 0 && (
           <Reveal>
-            <SectionLabel>The results</SectionLabel>
+            <SectionLabel>{t.results}</SectionLabel>
             <ul className="space-y-3">
               {project.outcomes.map((outcome, i) => (
                 <li key={i} className="flex gap-3 leading-relaxed text-gray-300">
@@ -137,7 +153,7 @@ export default async function ProjectPage({ params }: Params) {
         {project.note && (
           <Reveal>
             <div className="rounded-2xl border border-crimson/30 bg-crimson/5 p-6">
-              <SectionLabel>Good to know</SectionLabel>
+              <SectionLabel>{t.goodToKnow}</SectionLabel>
               <p className="whitespace-pre-line leading-relaxed text-gray-300">{project.note}</p>
             </div>
           </Reveal>
@@ -145,11 +161,11 @@ export default async function ProjectPage({ params }: Params) {
 
         {project.gallery.length > 0 && (
           <Reveal>
-            <SectionLabel>Gallery</SectionLabel>
+            <SectionLabel>{t.gallery}</SectionLabel>
             <div className="grid gap-4 sm:grid-cols-2">
               {project.gallery.map((src, i) => (
                 <a key={i} href={src} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-xl border border-white/10 transition-all hover:border-crimson/50 hover:shadow-glow-sm">
-                  <img src={src} alt={`${project.title} — image ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
+                  <img src={src} alt={`${project.title} — ${t.image} ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
                 </a>
               ))}
             </div>
@@ -158,7 +174,7 @@ export default async function ProjectPage({ params }: Params) {
 
         {project.links.length > 0 && (
           <Reveal>
-            <SectionLabel>Links</SectionLabel>
+            <SectionLabel>{t.links}</SectionLabel>
             <div className="flex flex-wrap gap-3">
               {project.links.map((link) => (
                 <TrackedLink
@@ -178,11 +194,11 @@ export default async function ProjectPage({ params }: Params) {
 
       <Reveal>
         <div className="mt-20 flex flex-wrap gap-4 border-t border-white/5 pt-10">
-          <TrackedLink href="/#projects" trackId={`project-back:${project.slug}`} className="btn-ghost">
-            ← Back to projects
+          <TrackedLink href={home("projects")} trackId={`project-back:${project.slug}`} className="btn-ghost">
+            {t.back}
           </TrackedLink>
-          <TrackedLink href="/#contact" trackId={`project-contact:${project.slug}`} className="btn-primary">
-            Discuss a similar project
+          <TrackedLink href={home("contact")} trackId={`project-contact:${project.slug}`} className="btn-primary">
+            {t.discuss}
           </TrackedLink>
         </div>
       </Reveal>

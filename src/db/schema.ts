@@ -14,6 +14,23 @@ import {
 /** External link attached to a project or a contact/social entry. */
 export type LinkItem = { label: string; url: string };
 
+/**
+ * Per-language overrides for CMS text. The plain columns hold the English
+ * base; a missing or empty translated field falls back to it.
+ */
+export type Translations<T> = Partial<Record<"de" | "ru", Partial<T>>>;
+export type SettingsText = { title: string; tagline: string; bio: string; metaDescription: string };
+export type ProjectText = {
+  title: string;
+  summary: string;
+  description: string;
+  problems: string[];
+  solution: string;
+  outcomes: string[];
+  note: string;
+  tags: string[];
+};
+
 const id = () =>
   text("id")
     .primaryKey()
@@ -48,6 +65,10 @@ export const siteSettings = pgTable("site_settings", {
     .$type<LinkItem[]>()
     .notNull()
     .default(sql`'[]'::jsonb`),
+  translations: jsonb("translations")
+    .$type<Translations<SettingsText>>()
+    .notNull()
+    .default(sql`'{}'::jsonb`),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
@@ -83,6 +104,11 @@ export const projects = pgTable("projects", {
     .$type<LinkItem[]>()
     .notNull()
     .default(sql`'[]'::jsonb`),
+  translations: jsonb("translations")
+    .$type<Translations<ProjectText>>()
+    .notNull()
+    .default(sql`'{}'::jsonb`),
+  featured: boolean("featured").notNull().default(false), // leads the homepage grid
   sortOrder: integer("sort_order").notNull().default(0),
   published: boolean("published").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

@@ -5,9 +5,10 @@ A personal portfolio with a **black / deep-red cosmic theme**, an **animated her
 ## Features
 
 - **Public site** — animated hero (Canvas 2D, 60fps, `prefers-reduced-motion` static fallback), about/bio with skills, project grid with detailed case pages, contact form, scroll reveals and red-glow hover effects, fully responsive.
+- **Three languages** — German at `/` (default), English at `/en`, Russian at `/ru`, with a DE · EN · RU switch in the header, `hreflang` alternates and the right `<html lang>`. UI strings live in `src/lib/i18n.ts`; CMS text is edited per language in the admin (English is the base, empty DE/RU fields fall back to it).
 - **Admin panel at `/admin`** — email + password login (bcrypt-hashed, JWT session in an httpOnly cookie, middleware-protected routes):
-  - Projects: create, edit, delete, **reorder**, publish/unpublish; title, date, summary, description, problems, solution, outcomes, note, cover image, gallery, tags, external links.
-  - Settings: name, title, tagline, bio, profile photo, skills, contact email, social links, SEO description.
+  - Projects: create, edit, delete, **reorder**, publish/unpublish, **feature** (featured projects lead the homepage, the rest go under "More projects"); title, date, summary, description, problems, solution, outcomes, note, cover image, gallery, tags, external links.
+  - Settings: name, header label, title, tagline, bio, profile photo, skills, contact email, social links, SEO description.
   - Media library: upload images (Vercel Blob) or paste any image URL.
   - Messages: contact-form submissions land here.
 - **Analytics dashboard** — page views (per page + site-wide), clicks on project cards / contact buttons / external links, daily / weekly / monthly time-series charts. Events are stored in **your own Postgres database**: no third-party service, no cookies, no IPs, no personal data.
@@ -22,6 +23,7 @@ Next.js 15 (App Router, TypeScript) · Tailwind CSS · Drizzle ORM · PostgreSQL
 ├── drizzle/                     # generated SQL migrations
 ├── public/images/               # hero fallback + seeded project covers
 ├── scripts/
+│   ├── ensure-schema.ts         # idempotent column additions, runs before every build
 │   ├── migrate.ts               # apply migrations (alternative to db:push)
 │   └── seed.ts                  # admin user + settings + 6 projects
 ├── src/
@@ -117,7 +119,7 @@ Only those fields are stored — no cookies, no IP addresses, no user agents. Ad
 
 ## 6 · Extending
 
-- **New project field** → add the column in `src/db/schema.ts`, run `npm run db:generate` + `db:push`, whitelist it in `src/lib/project-payload.ts`, add the input in `src/components/admin/ProjectForm.tsx`, render it in `src/app/(site)/projects/[slug]/page.tsx`.
+- **New project field** → add the column in `src/db/schema.ts`, run `npm run db:generate` (make the SQL `ADD COLUMN IF NOT EXISTS`) and add the same statement to `scripts/ensure-schema.ts` so Vercel applies it on the next deploy, whitelist it in `src/lib/project-payload.ts`, add the input in `src/components/admin/ProjectForm.tsx`, render it in `src/app/(site)/[lang]/projects/[slug]/page.tsx`. If it is text visitors read, also add it to `ProjectText` / `PROJECT_TEXT_SPEC` (`src/lib/localize.ts`) so it can be translated.
 - **New tracked element** → call `trackClick("your:element-id")` from `@/lib/track` — it appears in the dashboard automatically.
 - **Hero tuning** → all scene parameters (ring count, colors, speeds, nebula placement) live at the top of `src/components/CosmicHero.tsx`.
 

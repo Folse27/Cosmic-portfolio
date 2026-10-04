@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { LinkItem, Project } from "@/db/schema";
+import type { LinkItem, Project, ProjectText } from "@/db/schema";
+import type { Locale } from "@/lib/i18n";
 import { GalleryEditor, ImagePicker } from "./ImagePicker";
+import { EDIT_LOCALES, LangBadge, LangTabs } from "./LangTabs";
 
 /** One value per line ⇄ string[] */
 const toLines = (arr: string[]) => arr.join("\n");
@@ -22,51 +24,106 @@ function linksFromText(s: string): LinkItem[] {
     .filter((l) => l.label && l.url);
 }
 
+/** Translatable fields as the form edits them: lists are newline / comma separated text. */
+type TextForm = Record<keyof ProjectText, string>;
+const EMPTY_TEXT: TextForm = {
+  title: "",
+  summary: "",
+  description: "",
+  problems: "",
+  solution: "",
+  outcomes: "",
+  note: "",
+  tags: "",
+};
+const TEXT_KEYS = Object.keys(EMPTY_TEXT) as (keyof ProjectText)[];
+
+function toTextForm(t: Partial<ProjectText> | undefined): TextForm {
+  return {
+    title: t?.title ?? "",
+    summary: t?.summary ?? "",
+    description: t?.description ?? "",
+    problems: toLines(t?.problems ?? []),
+    solution: t?.solution ?? "",
+    outcomes: toLines(t?.outcomes ?? []),
+    note: t?.note ?? "",
+    tags: (t?.tags ?? []).join(", "),
+  };
+}
+
+function fromTextForm(f: TextForm): ProjectText {
+  return {
+    title: f.title,
+    summary: f.summary,
+    description: f.description,
+    problems: fromLines(f.problems),
+    solution: f.solution,
+    outcomes: fromLines(f.outcomes),
+    note: f.note,
+    tags: f.tags.split(",").map((t) => t.trim()).filter(Boolean),
+  };
+}
+
 export default function ProjectForm({ project }: { project?: Project }) {
   const router = useRouter();
   const isEdit = !!project;
 
   const [form, setForm] = useState({
-    title: project?.title ?? "",
     slug: project?.slug ?? "",
     dateLabel: project?.dateLabel ?? "",
-    summary: project?.summary ?? "",
-    description: project?.description ?? "",
-    problems: toLines(project?.problems ?? []),
-    solution: project?.solution ?? "",
-    outcomes: toLines(project?.outcomes ?? []),
-    note: project?.note ?? "",
-    tags: (project?.tags ?? []).join(", "),
     links: linksToText(project?.links ?? []),
+    featured: project?.featured ?? false,
     published: project?.published ?? true,
   });
+  // Translatable text, one copy per language. "en" is the base columns.
+  const [text, setText] = useState<Record<Locale, TextForm>>(() => ({
+    en: project ? toTextForm({ ...project, note: project.note ?? "" }) : EMPTY_TEXT,
+    de: toTextForm(project?.translations?.de),
+    ru: toTextForm(project?.translations?.ru),
+  }));
+  const [lang, setLang] = useState<Locale>("en");
   const [coverImage, setCoverImage] = useState<string | null>(project?.coverImage ?? null);
   const [gallery, setGallery] = useState<string[]>(project?.gallery ?? []);
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const set = (key: "slug" | "dateLabel" | "links") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [key]: e.target.value });
+
+  /** Props for an input bound to the current language tab. */
+  const tField = (key: keyof ProjectText) => ({
+    value: text[lang][key],
+    placeholder: lang === "en" ? undefined : text.en[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setText({ ...text, [lang]: { ...text[lang], [key]: e.target.value } }),
+  });
+
+  const incomplete = Object.fromEntries(
+    EDIT_LOCALES.map((l) => [l, l !== "en" && TEXT_KEYS.some((k) => text.en[k].trim() && !text[l][k].trim())]),
+  );
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+    // The English title is the one required field. Its input only enforces
+    // `required` while the EN tab is open, so check it here as well.
+    if (!text.en.title.trim()) {
+      setLang("en");
+      setError("The English title is required.");
+      setStatus("error");
+      return;
+    }
     setStatus("saving");
     setError(null);
 
     const payload = {
-      title: form.title,
+      ...fromTextForm(text.en),
+      translations: { de: fromTextForm(text.de), ru: fromTextForm(text.ru) },
       slug: form.slug,
       dateLabel: form.dateLabel,
-      summary: form.summary,
-      description: form.description,
-      problems: fromLines(form.problems),
-      solution: form.solution,
-      outcomes: fromLines(form.outcomes),
-      note: form.note,
-      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
       links: linksFromText(form.links),
       coverImage,
       gallery,
+      featured: form.featured,
       published: form.published,
     };
 
@@ -96,11 +153,13 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
   return (
     <form onSubmit={save} className="max-w-3xl space-y-6">
+      <LangTabs value={lang} onChange={setLang} incomplete={incomplete} />
+
       <div className="card-panel space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label">Title *</label>
-            <input className="input" required value={form.title} onChange={set("title")} />
+            <label className="label">Title{lang === "en" && " *"}<LangBadge lang={lang} /></label>
+            <input className="input" required={lang === "en"} {...tField("title")} />
           </div>
           <div>
             <label className="label">Date label</label>
@@ -112,31 +171,31 @@ export default function ProjectForm({ project }: { project?: Project }) {
           <input className="input font-mono" placeholder="my-project" value={form.slug} onChange={set("slug")} />
         </div>
         <div>
-          <label className="label">Card summary (shown in the projects grid)</label>
-          <textarea className="input min-h-16 resize-y" value={form.summary} onChange={set("summary")} />
+          <label className="label">Card summary (shown in the projects grid)<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-16 resize-y" {...tField("summary")} />
         </div>
       </div>
 
       <div className="card-panel space-y-4">
         <div>
-          <label className="label">Description</label>
-          <textarea className="input min-h-32 resize-y" value={form.description} onChange={set("description")} />
+          <label className="label">Description<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-32 resize-y" {...tField("description")} />
         </div>
         <div>
-          <label className="label">Business problems — one per line</label>
-          <textarea className="input min-h-24 resize-y font-mono text-xs" value={form.problems} onChange={set("problems")} />
+          <label className="label">Business problems — one per line<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-24 resize-y font-mono text-xs" {...tField("problems")} />
         </div>
         <div>
-          <label className="label">Solution</label>
-          <textarea className="input min-h-28 resize-y" value={form.solution} onChange={set("solution")} />
+          <label className="label">Solution<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-28 resize-y" {...tField("solution")} />
         </div>
         <div>
-          <label className="label">Outcomes — one per line</label>
-          <textarea className="input min-h-24 resize-y font-mono text-xs" value={form.outcomes} onChange={set("outcomes")} />
+          <label className="label">Outcomes — one per line<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-24 resize-y font-mono text-xs" {...tField("outcomes")} />
         </div>
         <div>
-          <label className="label">Important note (optional callout)</label>
-          <textarea className="input min-h-16 resize-y" value={form.note} onChange={set("note")} />
+          <label className="label">Important note (optional callout)<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-16 resize-y" {...tField("note")} />
         </div>
       </div>
 
@@ -147,8 +206,12 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
       <div className="card-panel space-y-4">
         <div>
-          <label className="label">Tags — comma separated</label>
-          <input className="input" placeholder="WhatsApp, AI, Automation" value={form.tags} onChange={set("tags")} />
+          <label className="label">Tags — comma separated<LangBadge lang={lang} /></label>
+          <input
+            className="input"
+            {...tField("tags")}
+            placeholder={lang === "en" ? "WhatsApp, AI, Automation" : text.en.tags}
+          />
         </div>
         <div>
           <label className="label">External links — one per line, format: Label | https://url</label>
@@ -159,6 +222,15 @@ export default function ProjectForm({ project }: { project?: Project }) {
             onChange={set("links")}
           />
         </div>
+        <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+          <input
+            type="checkbox"
+            checked={form.featured}
+            onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+            className="h-4 w-4 accent-[#e11d33]"
+          />
+          Featured (shown first on the homepage; the rest move to &quot;More projects&quot;)
+        </label>
         <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
           <input
             type="checkbox"

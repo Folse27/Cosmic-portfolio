@@ -1,4 +1,5 @@
-import type { LinkItem } from "@/db/schema";
+import type { LinkItem, ProjectText } from "@/db/schema";
+import { PROJECT_TEXT_SPEC, sanitizeTranslations } from "@/lib/localize";
 
 const str = (v: unknown, max = 20000) => (typeof v === "string" ? v.slice(0, max) : "");
 const strOrNull = (v: unknown, max = 2000) =>
@@ -36,6 +37,8 @@ export function projectPayload(body: Record<string, unknown>) {
     gallery: strArray(body.gallery, 60),
     tags: strArray(body.tags, 30).map((t) => t.slice(0, 40)),
     links: linkArray(body.links),
+    translations: sanitizeTranslations<ProjectText>(body.translations, PROJECT_TEXT_SPEC),
+    featured: body.featured === true,
     published: body.published !== false,
   };
 }

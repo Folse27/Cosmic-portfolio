@@ -18,10 +18,20 @@ function PlaceholderCover({ index }: { index: number }) {
   );
 }
 
-export default function ProjectCard({ project, index }: { project: Project; index: number }) {
+export default function ProjectCard({
+  project,
+  index,
+  href,
+  seeHow,
+}: {
+  project: Project;
+  index: number;
+  href: string;
+  seeHow: string;
+}) {
   return (
     <Link
-      href={`/projects/${project.slug}`}
+      href={href}
       onClick={() => trackClick(`project-card:${project.slug}`)}
       className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-panel transition-all duration-300 hover:-translate-y-1 hover:border-crimson/50 hover:shadow-glow"
     >
@@ -54,7 +64,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
         </div>
 
         <span className="pt-1 font-mono text-xs text-gray-500 transition-colors group-hover:text-crimson-bright">
-          See how it works <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          {seeHow} <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
         </span>
       </div>
     </Link>

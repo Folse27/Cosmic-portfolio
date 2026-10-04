@@ -15,6 +15,13 @@
       "when": 1791111337914,
       "tag": "0001_nav_name",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791117035362,
+      "tag": "0002_i18n_featured",
+      "breakpoints": true
     }
   ]
 }

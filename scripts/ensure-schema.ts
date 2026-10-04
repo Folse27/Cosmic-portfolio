@@ -21,6 +21,9 @@ async function main() {
   );
 
   await pool.query(`ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "nav_name" text`);
+  await pool.query(`ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "translations" jsonb DEFAULT '{}'::jsonb NOT NULL`);
+  await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "translations" jsonb DEFAULT '{}'::jsonb NOT NULL`);
+  await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "featured" boolean DEFAULT false NOT NULL`);
 
   await pool.end();
   console.log("✔ Schema up to date");

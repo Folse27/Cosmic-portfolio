@@ -92,6 +92,9 @@ export default function AdminProjectsPage() {
                 </p>
               </div>
 
+              {project.featured && (
+                <span className="chip !border-crimson/40 !text-crimson-bright">★ Featured</span>
+              )}
               {!project.published && (
                 <span className="chip !border-yellow-500/40 !text-yellow-500">Draft</span>
               )}

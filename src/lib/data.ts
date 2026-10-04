@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   metaDescription: "Personal portfolio — automation and web development projects.",
   skills: [],
   socials: [],
+  translations: {},
   updatedAt: new Date(),
 };
 

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { siteSettings, type LinkItem } from "@/db/schema";
+import { siteSettings, type LinkItem, type SettingsText } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
 import { DEFAULT_SETTINGS, getSettings } from "@/lib/data";
+import { SETTINGS_TEXT_SPEC, sanitizeTranslations } from "@/lib/localize";
 
 export async function GET() {
   return NextResponse.json(await getSettings());
@@ -46,6 +47,7 @@ export async function PUT(req: Request) {
       ? body.skills.filter((s): s is string => typeof s === "string" && !!s.trim()).map((s) => s.slice(0, 60)).slice(0, 60)
       : [],
     socials,
+    translations: sanitizeTranslations<SettingsText>(body.translations, SETTINGS_TEXT_SPEC),
     updatedAt: new Date(),
   };
 

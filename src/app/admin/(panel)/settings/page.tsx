@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { LinkItem, SiteSettings } from "@/db/schema";
+import type { LinkItem, SettingsText, SiteSettings } from "@/db/schema";
 import { ImagePicker } from "@/components/admin/ImagePicker";
+import { EDIT_LOCALES, LangBadge, LangTabs } from "@/components/admin/LangTabs";
+import type { Locale } from "@/lib/i18n";
 
 const socialsToText = (socials: LinkItem[]) => socials.map((s) => `${s.label} | ${s.url}`).join("\n");
 function socialsFromText(s: string): LinkItem[] {
@@ -15,18 +17,20 @@ function socialsFromText(s: string): LinkItem[] {
     .filter((l) => l.label && l.url);
 }
 
+const EMPTY_TEXT: SettingsText = { title: "", tagline: "", bio: "", metaDescription: "" };
+const TEXT_KEYS = Object.keys(EMPTY_TEXT) as (keyof SettingsText)[];
+
 export default function AdminSettingsPage() {
   const [form, setForm] = useState({
     name: "",
     navName: "",
-    title: "",
-    tagline: "",
-    bio: "",
     email: "",
-    metaDescription: "",
     skills: "",
     socials: "",
   });
+  // Translatable text, one copy per language. "en" is the base columns.
+  const [text, setText] = useState<Record<Locale, SettingsText>>({ en: EMPTY_TEXT, de: EMPTY_TEXT, ru: EMPTY_TEXT });
+  const [lang, setLang] = useState<Locale>("en");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
 
@@ -37,13 +41,14 @@ export default function AdminSettingsPage() {
         setForm({
           name: s.name,
           navName: s.navName ?? "",
-          title: s.title,
-          tagline: s.tagline,
-          bio: s.bio,
           email: s.email ?? "",
-          metaDescription: s.metaDescription,
           skills: s.skills.join(", "),
           socials: socialsToText(s.socials),
+        });
+        setText({
+          en: { title: s.title, tagline: s.tagline, bio: s.bio, metaDescription: s.metaDescription },
+          de: { ...EMPTY_TEXT, ...s.translations?.de },
+          ru: { ...EMPTY_TEXT, ...s.translations?.ru },
         });
         setProfileImage(s.profileImage);
         setStatus("idle");
@@ -54,6 +59,18 @@ export default function AdminSettingsPage() {
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [key]: e.target.value });
 
+  /** Props for an input bound to the current language tab. */
+  const tField = (key: keyof SettingsText) => ({
+    value: text[lang][key],
+    placeholder: lang === "en" ? undefined : text.en[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setText({ ...text, [lang]: { ...text[lang], [key]: e.target.value } }),
+  });
+
+  const incomplete = Object.fromEntries(
+    EDIT_LOCALES.map((l) => [l, l !== "en" && TEXT_KEYS.some((k) => text.en[k].trim() && !text[l][k].trim())]),
+  );
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setStatus("saving");
@@ -62,6 +79,8 @@ export default function AdminSettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
+        ...text.en,
+        translations: { de: text.de, ru: text.ru },
         profileImage,
         skills: form.skills.split(",").map((s) => s.trim()).filter(Boolean),
         socials: socialsFromText(form.socials),
@@ -82,6 +101,8 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
+      <LangTabs value={lang} onChange={setLang} incomplete={incomplete} />
+
       <div className="card-panel space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -92,26 +113,26 @@ export default function AdminSettingsPage() {
             <label className="label">Header label (top left) — blank uses the name</label>
             <input className="input" value={form.navName} placeholder={form.name} onChange={set("navName")} />
           </div>
-          <div>
-            <label className="label">Title / role (above the name)</label>
-            <input className="input" value={form.title} onChange={set("title")} />
+          <div className="sm:col-span-2">
+            <label className="label">Title / role (above the name)<LangBadge lang={lang} /></label>
+            <input className="input" {...tField("title")} />
           </div>
         </div>
         <div>
-          <label className="label">Tagline (under the name)</label>
-          <textarea className="input min-h-16 resize-y" value={form.tagline} onChange={set("tagline")} />
+          <label className="label">Tagline (under the name)<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-16 resize-y" {...tField("tagline")} />
         </div>
         <div>
-          <label className="label">SEO meta description</label>
-          <textarea className="input min-h-16 resize-y" value={form.metaDescription} onChange={set("metaDescription")} />
+          <label className="label">SEO meta description<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-16 resize-y" {...tField("metaDescription")} />
         </div>
       </div>
 
       <div className="card-panel space-y-4">
         <ImagePicker label="Profile photo" value={profileImage} onChange={setProfileImage} />
         <div>
-          <label className="label">Bio — blank line starts a new paragraph</label>
-          <textarea className="input min-h-40 resize-y" value={form.bio} onChange={set("bio")} />
+          <label className="label">Bio — blank line starts a new paragraph<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-40 resize-y" {...tField("bio")} />
         </div>
         <div>
           <label className="label">Skills / tech stack — comma separated</label>

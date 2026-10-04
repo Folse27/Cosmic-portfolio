@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage, LegalSection, PlaceholderWarning } from "@/components/Legal";
+import { localePath, type Locale } from "@/lib/i18n";
 import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
@@ -19,7 +20,9 @@ export const metadata: Metadata = {
  * If you add third-party services later (Google Analytics, embeds, a
  * newsletter…), this page must be updated to match.
  */
-export default function PrivacyPage() {
+export default async function PrivacyPage({ params }: { params: Promise<{ lang: string }> }) {
+  // The [lang] layout has already rejected unknown languages.
+  const lang = (await params).lang as Locale;
   return (
     <LegalPage kicker="Datenschutzerklärung" title="Privacy Policy">
       {ADDRESS_INCOMPLETE && (
@@ -234,7 +237,7 @@ export default function PrivacyPage() {
 
       <p className="border-t border-white/5 pt-8 font-mono text-xs text-gray-500">
         Last updated: {LEGAL.lastUpdated} ·{" "}
-        <Link href="/impressum" className="text-crimson-bright transition-colors hover:underline">
+        <Link href={localePath(lang, "/impressum")} className="text-crimson-bright transition-colors hover:underline">
           Legal Notice
         </Link>
       </p>
