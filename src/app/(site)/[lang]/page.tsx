@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import type { Project } from "@/db/schema";
 import { getPublishedProjects, getSettings } from "@/lib/data";
-import { getDict, localePath, type Locale } from "@/lib/i18n";
+import { formatPrice, getDict, localePath, type Locale } from "@/lib/i18n";
 import { localizeProject, localizeSettings } from "@/lib/localize";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +37,7 @@ function ProjectGrid({
             project={project}
             href={localePath(lang, `/projects/${project.slug}`)}
             seeHow={seeHow}
+            price={formatPrice(lang, project.priceAmount, project.priceType)}
           />
         </Reveal>
       ))}
@@ -159,6 +160,23 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               <ProjectGrid projects={more} lang={lang} seeHow={t.card.seeHow} />
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ── Data protection in client projects ───────────────────────── */}
+      <section className="pt-24 md:pt-32">
+        <div id="data-protection" className="anchor-target mx-auto max-w-site px-6">
+          <SectionHeading kicker={t.dataProtection.kicker} title={t.dataProtection.title} />
+          <div className="grid gap-6 sm:grid-cols-2">
+            {t.dataProtection.points.map((point, i) => (
+              <Reveal key={point.title} delay={(i % 2) * 90}>
+                <div className="card-panel h-full">
+                  <h3 className="font-display text-base text-white">{point.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-400">{point.text}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
 import { getProjectBySlug, getSettings } from "@/lib/data";
-import { getDict, isLocale, localeAlternates, localePath, LOCALES, OG_LOCALE } from "@/lib/i18n";
+import { formatPrice, getDict, isLocale, localeAlternates, localePath, LOCALES, OG_LOCALE } from "@/lib/i18n";
 import { localizeProject } from "@/lib/localize";
 import { OG_IMAGE } from "@/lib/site-url";
 
@@ -71,7 +71,9 @@ export default async function ProjectPage({ params }: Params) {
   const loaded = await load(params);
   if (!loaded) notFound();
   const { lang, project } = loaded;
-  const t = getDict(lang).project;
+  const dict = getDict(lang);
+  const t = dict.project;
+  const price = formatPrice(lang, project.priceAmount, project.priceType);
   const home = (hash: string) => localePath(lang, `/#${hash}`);
 
   return (
@@ -94,6 +96,15 @@ export default async function ProjectPage({ params }: Params) {
               {project.tags.map((tag) => (
                 <span key={tag} className="chip">{tag}</span>
               ))}
+            </div>
+          )}
+          {price && (
+            <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-crimson/30 bg-crimson/5 p-5 sm:flex-row sm:items-center sm:gap-6">
+              <div className="shrink-0">
+                <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-crimson-text">{dict.price.label}</p>
+                <p className="mt-1 font-display text-2xl text-white">{price}</p>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-400">{dict.price.note}</p>
             </div>
           )}
         </div>

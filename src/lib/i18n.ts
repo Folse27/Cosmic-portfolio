@@ -47,6 +47,13 @@ const en = {
   about: { kicker: "About", title: "Behind the console", skills: "Tech stack & skills" },
   projects: { kicker: "Selected work", title: "Projects", more: "More projects", empty: "No projects yet." },
   card: { seeHow: "See how it works" },
+  price: {
+    label: "Price",
+    from: "from {price}",
+    fixed: "{price}",
+    hourly: "{price} per hour",
+    note: "Guide price. I'll give you an exact quote after a short chat about your task. Running costs, such as AI services or hosting, come on top where they apply.",
+  },
   project: {
     allProjects: "← All projects",
     whatItIs: "What it is",
@@ -60,6 +67,28 @@ const en = {
     back: "← Back to projects",
     discuss: "Discuss a similar project",
     notFound: "Project not found",
+  },
+  dataProtection: {
+    kicker: "Data protection",
+    title: "What happens to your customers' data",
+    points: [
+      {
+        title: "I don't store customer data",
+        text: "My bots keep no messages or customer data on my side. Anything that needs saving goes into the CRM your business already uses.",
+      },
+      {
+        title: "AI replies via Claude and OpenAI",
+        text: "To write a reply, the bot sends the message to the Anthropic (Claude) or OpenAI API. By default, neither provider trains its models on API data.",
+      },
+      {
+        title: "Hosted on Render and Vercel",
+        text: "The bots run on Render or Vercel servers, and messages only pass through them.",
+      },
+      {
+        title: "A contract for EU businesses",
+        text: "For businesses in the EU, I sign a data processing agreement under Art. 28 GDPR on request and help with the note for your privacy policy.",
+      },
+    ],
   },
   contact: {
     kicker: "Contact",
@@ -91,6 +120,13 @@ const de: Dict = {
   about: { kicker: "Über mich", title: "Der Mensch hinter den Projekten", skills: "Technologien & Fähigkeiten" },
   projects: { kicker: "Ausgewählte Arbeiten", title: "Projekte", more: "Weitere Projekte", empty: "Noch keine Projekte." },
   card: { seeHow: "So funktioniert’s" },
+  price: {
+    label: "Preis",
+    from: "ab {price}",
+    fixed: "{price}",
+    hourly: "{price} pro Stunde",
+    note: "Richtpreis. Den genauen Preis nenne ich nach einem kurzen Gespräch über Ihre Aufgabe. Laufende Kosten, etwa für KI-Dienste oder Hosting, kommen gegebenenfalls hinzu.",
+  },
   project: {
     allProjects: "← Alle Projekte",
     whatItIs: "Worum es geht",
@@ -104,6 +140,28 @@ const de: Dict = {
     back: "← Zurück zu den Projekten",
     discuss: "Kontakt aufnehmen",
     notFound: "Projekt nicht gefunden",
+  },
+  dataProtection: {
+    kicker: "Datenschutz",
+    title: "Was mit den Daten Ihrer Kunden passiert",
+    points: [
+      {
+        title: "Ich speichere keine Kundendaten",
+        text: "Meine Bots speichern Nachrichten und Kundendaten nicht bei mir. Was gespeichert werden soll, landet im CRM, das Ihr Unternehmen bereits nutzt.",
+      },
+      {
+        title: "KI-Antworten über Claude und OpenAI",
+        text: "Damit der Bot antworten kann, wird die Nachricht an die API von Anthropic (Claude) oder OpenAI geschickt. Beide Anbieter nutzen Daten aus ihrer API standardmäßig nicht zum Training ihrer Modelle.",
+      },
+      {
+        title: "Server bei Render und Vercel",
+        text: "Die Bots laufen auf Servern von Render oder Vercel. Die Nachrichten laufen dort nur durch.",
+      },
+      {
+        title: "AV-Vertrag nach DSGVO",
+        text: "Auf Wunsch schließe ich mit Ihnen einen Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO und helfe beim Hinweis für Ihre Datenschutzerklärung.",
+      },
+    ],
   },
   contact: {
     kicker: "Kontakt",
@@ -133,6 +191,13 @@ const ru: Dict = {
   about: { kicker: "Обо мне", title: "Кто стоит за проектами", skills: "Что я делаю" },
   projects: { kicker: "Избранные работы", title: "Проекты", more: "Другие проекты", empty: "Проектов пока нет." },
   card: { seeHow: "Как это работает" },
+  price: {
+    label: "Стоимость",
+    from: "от {price}",
+    fixed: "{price}",
+    hourly: "{price} в час",
+    note: "Ориентировочная цена. Точную стоимость назову после короткого разговора о вашей задаче. Ежемесячные расходы, например на ИИ-сервисы или хостинг, оплачиваются отдельно, если они есть.",
+  },
   project: {
     allProjects: "← Все проекты",
     whatItIs: "Что это",
@@ -146,6 +211,28 @@ const ru: Dict = {
     back: "← Назад к проектам",
     discuss: "Обсудить похожий проект",
     notFound: "Проект не найден",
+  },
+  dataProtection: {
+    kicker: "Данные",
+    title: "Что происходит с данными ваших клиентов",
+    points: [
+      {
+        title: "Я не храню данные клиентов",
+        text: "Мои боты не сохраняют у меня ни сообщения, ни данные клиентов. Всё, что нужно сохранить, попадает в CRM, которой ваша компания уже пользуется.",
+      },
+      {
+        title: "Ответы ИИ через Claude и OpenAI",
+        text: "Чтобы бот мог ответить, сообщение отправляется в API Anthropic (Claude) или OpenAI. По умолчанию оба сервиса не обучают свои модели на данных из API.",
+      },
+      {
+        title: "Серверы Render и Vercel",
+        text: "Боты работают на серверах Render или Vercel, сообщения только проходят через них.",
+      },
+      {
+        title: "Договор для компаний из ЕС",
+        text: "Для компаний из ЕС по запросу заключаю договор об обработке данных по ст. 28 GDPR и помогаю с текстом для вашей политики конфиденциальности.",
+      },
+    ],
   },
   contact: {
     kicker: "Контакты",
@@ -172,3 +259,10 @@ const ru: Dict = {
 const DICTS: Record<Locale, Dict> = { de, en, ru };
 
 export const getDict = (lang: Locale): Dict => DICTS[lang];
+
+/** 800, "from", "de" → "ab 800 €"; 25, "hourly", "en" → "€25 per hour". Null without an amount. */
+export function formatPrice(lang: Locale, amount: number | null, type: "from" | "fixed" | "hourly" | null): string | null {
+  if (amount === null) return null;
+  const money = new Intl.NumberFormat(lang, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(amount);
+  return DICTS[lang].price[type ?? "from"].replace("{price}", money);
+}

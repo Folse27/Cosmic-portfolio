@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { LinkItem, Project, ProjectText } from "@/db/schema";
+import type { LinkItem, PriceType, Project, ProjectText } from "@/db/schema";
 import type { Locale } from "@/lib/i18n";
 import { GalleryEditor, ImagePicker } from "./ImagePicker";
 import { EDIT_LOCALES, LangBadge, LangTabs } from "./LangTabs";
@@ -71,6 +71,8 @@ export default function ProjectForm({ project }: { project?: Project }) {
   const [form, setForm] = useState({
     slug: project?.slug ?? "",
     dateLabel: project?.dateLabel ?? "",
+    priceAmount: project?.priceAmount?.toString() ?? "",
+    priceType: (project?.priceType ?? "from") as PriceType,
     links: linksToText(project?.links ?? []),
     featured: project?.featured ?? false,
     published: project?.published ?? true,
@@ -87,7 +89,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const set = (key: "slug" | "dateLabel" | "links") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const set = (key: "slug" | "dateLabel" | "links" | "priceAmount") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [key]: e.target.value });
 
   /** Props for an input bound to the current language tab. */
@@ -120,6 +122,8 @@ export default function ProjectForm({ project }: { project?: Project }) {
       translations: { de: fromTextForm(text.de), ru: fromTextForm(text.ru) },
       slug: form.slug,
       dateLabel: form.dateLabel,
+      priceAmount: form.priceAmount,
+      priceType: form.priceType,
       links: linksFromText(form.links),
       coverImage,
       gallery,
@@ -163,7 +167,33 @@ export default function ProjectForm({ project }: { project?: Project }) {
           </div>
           <div>
             <label className="label">Date label</label>
-            <input className="input" placeholder="01.06.2026" value={form.dateLabel} onChange={set("dateLabel")} />
+            <input className="input" placeholder="01.05.2026 – 05.07.2026" value={form.dateLabel} onChange={set("dateLabel")} />
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label">Price in € — whole euros, leave empty to hide</label>
+            <input
+              className="input"
+              type="number"
+              min={1}
+              step={1}
+              placeholder="800"
+              value={form.priceAmount}
+              onChange={set("priceAmount")}
+            />
+          </div>
+          <div>
+            <label className="label">Price type (shown in every language)</label>
+            <select
+              className="input"
+              value={form.priceType}
+              onChange={(e) => setForm({ ...form, priceType: e.target.value as PriceType })}
+            >
+              <option value="from">From — “ab 800 €”</option>
+              <option value="fixed">Fixed — “800 €”</option>
+              <option value="hourly">Per hour — “25 € pro Stunde”</option>
+            </select>
           </div>
         </div>
         <div>

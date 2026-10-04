@@ -22,6 +22,13 @@
       "when": 1791117035362,
       "tag": "0002_i18n_featured",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791133137686,
+      "tag": "0003_project_price",
+      "breakpoints": true
     }
   ]
 }

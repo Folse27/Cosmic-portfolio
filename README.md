@@ -7,7 +7,7 @@ A personal portfolio with a **black / deep-red cosmic theme**, an **animated her
 - **Public site** — animated hero (Canvas 2D, 60fps, `prefers-reduced-motion` static fallback), about/bio with skills, project grid with detailed case pages, contact form, scroll reveals and red-glow hover effects, fully responsive.
 - **Three languages** — German at `/` (default), English at `/en`, Russian at `/ru`, with a DE · EN · RU switch in the header, `hreflang` alternates and the right `<html lang>`. UI strings live in `src/lib/i18n.ts`; CMS text is edited per language in the admin (English is the base, empty DE/RU fields fall back to it).
 - **Admin panel at `/admin`** — email + password login (bcrypt-hashed, JWT session in an httpOnly cookie, middleware-protected routes):
-  - Projects: create, edit, delete, **reorder**, publish/unpublish, **feature** (featured projects lead the homepage, the rest go under "More projects"); title, date, summary, description, problems, solution, outcomes, note, cover image, gallery, tags, external links.
+  - Projects: create, edit, delete, **reorder**, publish/unpublish, **feature**, set a **price** (from / fixed / per hour, formatted per language) (featured projects lead the homepage, the rest go under "More projects"); title, date, summary, description, problems, solution, outcomes, note, cover image, gallery, tags, external links.
   - Settings: name, header label, title, tagline, bio, profile photo, skills, contact email, social links, SEO description.
   - Media library: upload images (Vercel Blob) or paste any image URL.
   - Messages: contact-form submissions land here.

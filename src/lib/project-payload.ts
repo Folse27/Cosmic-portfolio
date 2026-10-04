@@ -1,4 +1,4 @@
-import type { LinkItem, ProjectText } from "@/db/schema";
+import { PRICE_TYPES, type LinkItem, type PriceType, type ProjectText } from "@/db/schema";
 import { PROJECT_TEXT_SPEC, sanitizeTranslations } from "@/lib/localize";
 
 const str = (v: unknown, max = 20000) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -18,6 +18,20 @@ function linkArray(v: unknown): LinkItem[] {
     .slice(0, 30);
 }
 
+/** Whole euros, 1 – 1,000,000; anything else means "no price". */
+function priceAmount(v: unknown): number | null {
+  const n = typeof v === "string" && v.trim() ? Number(v) : v;
+  return typeof n === "number" && Number.isInteger(n) && n > 0 && n <= 1_000_000 ? n : null;
+}
+
+/** A price needs an amount; its type defaults to "from" and is dropped without one. */
+function price(body: Record<string, unknown>): { priceAmount: number | null; priceType: PriceType | null } {
+  const amount = priceAmount(body.priceAmount);
+  if (amount === null) return { priceAmount: null, priceType: null };
+  const type = PRICE_TYPES.includes(body.priceType as PriceType) ? (body.priceType as PriceType) : "from";
+  return { priceAmount: amount, priceType: type };
+}
+
 /**
  * Normalizes a project create/update body: every field is validated and
  * length-capped, unknown keys are dropped. Slug and sortOrder are handled
@@ -27,6 +41,7 @@ export function projectPayload(body: Record<string, unknown>) {
   return {
     title: str(body.title, 200).trim(),
     dateLabel: strOrNull(body.dateLabel, 60),
+    ...price(body),
     summary: str(body.summary, 600).trim(),
     description: str(body.description).trim(),
     problems: strArray(body.problems),

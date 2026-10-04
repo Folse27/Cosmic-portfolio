@@ -14,6 +14,10 @@ import {
 /** External link attached to a project or a contact/social entry. */
 export type LinkItem = { label: string; url: string };
 
+/** How a project's price reads: "from 800 €", "800 €" or "25 € per hour". */
+export const PRICE_TYPES = ["from", "fixed", "hourly"] as const;
+export type PriceType = (typeof PRICE_TYPES)[number];
+
 /**
  * Per-language overrides for CMS text. The plain columns hold the English
  * base; a missing or empty translated field falls back to it.
@@ -78,7 +82,9 @@ export const projects = pgTable("projects", {
   id: id(),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
-  dateLabel: text("date_label"), // freeform display date, e.g. "01.06.2026"
+  dateLabel: text("date_label"), // freeform display date, e.g. "01.05.2026 – 05.07.2026"
+  priceAmount: integer("price_amount"), // whole euros; null = no price shown
+  priceType: text("price_type").$type<PriceType>(),
   summary: text("summary").notNull().default(""), // short card blurb
   description: text("description").notNull().default(""),
   problems: text("problems")

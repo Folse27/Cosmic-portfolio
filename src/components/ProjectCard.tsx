@@ -21,10 +21,13 @@ export default function ProjectCard({
   project,
   href,
   seeHow,
+  price,
 }: {
   project: Project;
   href: string;
   seeHow: string;
+  /** Already formatted for the page language, e.g. "ab 800 €". */
+  price: string | null;
 }) {
   return (
     <Link
@@ -60,9 +63,12 @@ export default function ProjectCard({
           ))}
         </div>
 
-        <span className="pt-1 font-mono text-xs text-gray-500 transition-colors group-hover:text-crimson-bright">
-          {seeHow} <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
-        </span>
+        <div className="flex items-baseline justify-between gap-3 pt-1">
+          <span className="font-mono text-xs text-gray-500 transition-colors group-hover:text-crimson-bright">
+            {seeHow} <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </span>
+          {price && <span className="font-mono text-xs text-gray-200">{price}</span>}
+        </div>
       </div>
     </Link>
   );
