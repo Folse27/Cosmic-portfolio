@@ -4,6 +4,7 @@ import { siteSettings, type LinkItem, type SettingsText } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
 import { DEFAULT_SETTINGS, getSettings } from "@/lib/data";
 import { SETTINGS_TEXT_SPEC, sanitizeTranslations } from "@/lib/localize";
+import { sanitizeSectionCopy } from "@/lib/section-copy";
 
 export async function GET() {
   return NextResponse.json(await getSettings());
@@ -49,6 +50,7 @@ export async function PUT(req: Request) {
       : [],
     socials,
     translations: sanitizeTranslations<SettingsText>(body.translations, SETTINGS_TEXT_SPEC),
+    sectionCopy: sanitizeSectionCopy(body.sectionCopy),
     updatedAt: new Date(),
   };
 

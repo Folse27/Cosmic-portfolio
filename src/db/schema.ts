@@ -24,6 +24,18 @@ export type PriceType = (typeof PRICE_TYPES)[number];
  */
 export type Translations<T> = Partial<Record<"de" | "ru", Partial<T>>>;
 export type SettingsText = { title: string; tagline: string; bio: string; metaDescription: string; skills: string[] };
+/** Editable copy of the homepage's data-protection and contact sections, per language. */
+export type InfoBox = { title: string; text: string };
+export type SectionCopy = {
+  dataKicker: string;
+  dataTitle: string;
+  dataPoints: InfoBox[];
+  contactKicker: string;
+  contactTitle: string;
+  contactIntro: string;
+};
+export type SectionCopyByLang = Partial<Record<"en" | "de" | "ru", Partial<SectionCopy>>>;
+
 export type ProjectText = {
   title: string;
   summary: string;
@@ -72,6 +84,11 @@ export const siteSettings = pgTable("site_settings", {
     .default(sql`'[]'::jsonb`),
   translations: jsonb("translations")
     .$type<Translations<SettingsText>>()
+    .notNull()
+    .default(sql`'{}'::jsonb`),
+  // Empty fields fall back to the built-in texts in src/lib/i18n.ts.
+  sectionCopy: jsonb("section_copy")
+    .$type<SectionCopyByLang>()
     .notNull()
     .default(sql`'{}'::jsonb`),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

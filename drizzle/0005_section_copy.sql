@@ -1,0 +1,1 @@
+ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "section_copy" jsonb DEFAULT '{}'::jsonb NOT NULL;

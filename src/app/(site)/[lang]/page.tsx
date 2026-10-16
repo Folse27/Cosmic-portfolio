@@ -7,6 +7,7 @@ import type { Project } from "@/db/schema";
 import { getPublishedProjects, getSettings } from "@/lib/data";
 import { formatPrice, getDict, localePath, type Locale } from "@/lib/i18n";
 import { localizeProject, localizeSettings } from "@/lib/localize";
+import { resolveSectionCopy } from "@/lib/section-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const t = getDict(lang);
   const [rawSettings, rawProjects] = await Promise.all([getSettings(), getPublishedProjects()]);
   const settings = localizeSettings(rawSettings, lang);
+  const copy = resolveSectionCopy(rawSettings, lang);
   const projects = rawProjects.map((p) => localizeProject(p, lang));
   // Featured projects lead; the rest go under "More projects". With nothing
   // featured, every project stays in the main grid.
@@ -166,10 +168,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       {/* ── Data protection in client projects ───────────────────────── */}
       <section className="pt-24 md:pt-32">
         <div id="data-protection" className="anchor-target mx-auto max-w-site px-6">
-          <SectionHeading kicker={t.dataProtection.kicker} title={t.dataProtection.title} />
+          <SectionHeading kicker={copy.dataKicker} title={copy.dataTitle} />
           <div className="grid gap-6 sm:grid-cols-2">
-            {t.dataProtection.points.map((point, i) => (
-              <Reveal key={point.title} delay={(i % 2) * 90}>
+            {copy.dataPoints.map((point, i) => (
+              <Reveal key={i} delay={(i % 2) * 90}>
                 <div className="card-panel h-full">
                   <h3 className="font-display text-base text-white">{point.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-gray-400">{point.text}</p>
@@ -183,12 +185,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       {/* ── Contact ──────────────────────────────────────────────────── */}
       <section className="pt-24 md:pt-32">
         <div id="contact" className="anchor-room anchor-target mx-auto max-w-site px-6 pb-24 md:pb-32">
-          <SectionHeading kicker={t.contact.kicker} title={t.contact.title} />
+          <SectionHeading kicker={copy.contactKicker} title={copy.contactTitle} />
           <Reveal>
             <ContactSection
               email={settings.email}
               socials={settings.socials}
-              labels={t.contact}
+              labels={{ ...t.contact, intro: copy.contactIntro }}
               privacyHref={localePath(lang, "/privacy")}
             />
           </Reveal>

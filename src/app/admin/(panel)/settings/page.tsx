@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { LinkItem, SettingsText, SiteSettings } from "@/db/schema";
+import type { InfoBox, LinkItem, SectionCopy, SettingsText, SiteSettings } from "@/db/schema";
 import { ImagePicker } from "@/components/admin/ImagePicker";
 import { EDIT_LOCALES, LangBadge, LangTabs } from "@/components/admin/LangTabs";
-import type { Locale } from "@/lib/i18n";
+import { LOCALES, type Locale } from "@/lib/i18n";
+import { defaultSectionCopy, resolveSectionCopy } from "@/lib/section-copy";
 
 const socialsToText = (socials: LinkItem[]) => socials.map((s) => `${s.label} | ${s.url}`).join("\n");
 function socialsFromText(s: string): LinkItem[] {
@@ -45,6 +46,10 @@ export default function AdminSettingsPage() {
   // Translatable text, one copy per language. "en" is the base columns.
   const [text, setText] = useState<Record<Locale, TextForm>>({ en: EMPTY_TEXT, de: EMPTY_TEXT, ru: EMPTY_TEXT });
   const [lang, setLang] = useState<Locale>("en");
+  // Homepage section copy, one full set per language, prefilled with what the site shows now.
+  const [sections, setSections] = useState<Record<Locale, SectionCopy>>(
+    () => Object.fromEntries(LOCALES.map((l) => [l, defaultSectionCopy(l)])) as Record<Locale, SectionCopy>,
+  );
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [logoImage, setLogoImage] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
@@ -66,6 +71,7 @@ export default function AdminSettingsPage() {
         });
         setProfileImage(s.profileImage);
         setLogoImage(s.logoImage);
+        setSections(Object.fromEntries(LOCALES.map((l) => [l, resolveSectionCopy(s, l)])) as Record<Locale, SectionCopy>);
         setStatus("idle");
       })
       .catch(() => setStatus("error"));
@@ -81,6 +87,20 @@ export default function AdminSettingsPage() {
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setText({ ...text, [lang]: { ...text[lang], [key]: e.target.value } }),
   });
+
+  const sec = sections[lang];
+  const setSec = (patch: Partial<SectionCopy>) => setSections({ ...sections, [lang]: { ...sec, ...patch } });
+  const secField = (key: Exclude<keyof SectionCopy, "dataPoints">) => ({
+    value: sec[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSec({ [key]: e.target.value }),
+  });
+  const setBox = (i: number, key: keyof InfoBox, value: string) =>
+    setSec({ dataPoints: sec.dataPoints.map((b, j) => (j === i ? { ...b, [key]: value } : b)) });
+  const moveBox = (i: number, by: -1 | 1) => {
+    const boxes = [...sec.dataPoints];
+    [boxes[i], boxes[i + by]] = [boxes[i + by], boxes[i]];
+    setSec({ dataPoints: boxes });
+  };
 
   const incomplete = Object.fromEntries(
     EDIT_LOCALES.map((l) => [l, l !== "en" && TEXT_KEYS.some((k) => text.en[k].trim() && !text[l][k].trim())]),
@@ -99,6 +119,7 @@ export default function AdminSettingsPage() {
         profileImage,
         logoImage,
         socials: socialsFromText(form.socials),
+        sectionCopy: sections,
       }),
     });
     setStatus(res.ok ? "saved" : "error");
@@ -172,6 +193,65 @@ export default function AdminSettingsPage() {
             value={form.socials}
             onChange={set("socials")}
           />
+        </div>
+      </div>
+
+      <div className="card-panel space-y-4">
+        <div>
+          <p className="font-display text-base text-white">Data protection section (homepage)</p>
+          <p className="mt-1 font-mono text-[11px] text-gray-500">Each language has its own boxes. Empty fields show the built-in text.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label">Small label above the heading<LangBadge lang={lang} /></label>
+            <input className="input" {...secField("dataKicker")} />
+          </div>
+          <div>
+            <label className="label">Heading<LangBadge lang={lang} /></label>
+            <input className="input" {...secField("dataTitle")} />
+          </div>
+        </div>
+        <div className="space-y-3">
+          {sec.dataPoints.map((box, i) => (
+            <div key={i} className="space-y-2 rounded-xl border border-white/10 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="label !mb-0">Box {i + 1}<LangBadge lang={lang} /></span>
+                <div className="flex gap-1 font-mono text-xs">
+                  <button type="button" disabled={i === 0} onClick={() => moveBox(i, -1)} className="rounded px-2 py-1 text-gray-400 hover:text-white disabled:opacity-30" aria-label="Move up">↑</button>
+                  <button type="button" disabled={i === sec.dataPoints.length - 1} onClick={() => moveBox(i, 1)} className="rounded px-2 py-1 text-gray-400 hover:text-white disabled:opacity-30" aria-label="Move down">↓</button>
+                  <button type="button" onClick={() => setSec({ dataPoints: sec.dataPoints.filter((_, j) => j !== i) })} className="rounded px-2 py-1 text-gray-500 hover:text-crimson-bright">Remove</button>
+                </div>
+              </div>
+              <input className="input" placeholder="Title" value={box.title} onChange={(e) => setBox(i, "title", e.target.value)} />
+              <textarea className="input min-h-16 resize-y" placeholder="Text" value={box.text} onChange={(e) => setBox(i, "text", e.target.value)} />
+            </div>
+          ))}
+          <button
+            type="button"
+            disabled={sec.dataPoints.length >= 12}
+            onClick={() => setSec({ dataPoints: [...sec.dataPoints, { title: "", text: "" }] })}
+            className="rounded-lg border border-dashed border-white/20 px-4 py-2 font-mono text-xs text-gray-300 transition-colors hover:border-crimson/60 hover:text-white disabled:opacity-40"
+          >
+            + Add box
+          </button>
+        </div>
+      </div>
+
+      <div className="card-panel space-y-4">
+        <p className="font-display text-base text-white">Contact section (homepage)</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label">Small label above the heading<LangBadge lang={lang} /></label>
+            <input className="input" {...secField("contactKicker")} />
+          </div>
+          <div>
+            <label className="label">Heading<LangBadge lang={lang} /></label>
+            <input className="input" {...secField("contactTitle")} />
+          </div>
+        </div>
+        <div>
+          <label className="label">Intro text next to the form<LangBadge lang={lang} /></label>
+          <textarea className="input min-h-20 resize-y" {...secField("contactIntro")} />
         </div>
       </div>
 

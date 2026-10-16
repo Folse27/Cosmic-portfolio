@@ -36,6 +36,13 @@
       "when": 1792167942149,
       "tag": "0004_logo_image",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792171420151,
+      "tag": "0005_section_copy",
+      "breakpoints": true
     }
   ]
 }

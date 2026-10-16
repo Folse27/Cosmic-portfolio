@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   skills: [],
   socials: [],
   translations: {},
+  sectionCopy: {},
   updatedAt: new Date(),
 };
 
