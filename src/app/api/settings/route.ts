@@ -41,6 +41,7 @@ export async function PUT(req: Request) {
     tagline: str(body.tagline, "", 500).trim(),
     bio: str(body.bio, "").trim(),
     profileImage: strOrNull(body.profileImage),
+    logoImage: strOrNull(body.logoImage),
     email: strOrNull(body.email, 200),
     metaDescription: str(body.metaDescription, "", 300).trim(),
     skills: Array.isArray(body.skills)

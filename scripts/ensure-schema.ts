@@ -26,6 +26,7 @@ async function main() {
   await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "featured" boolean DEFAULT false NOT NULL`);
   await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "price_amount" integer`);
   await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "price_type" text`);
+  await pool.query(`ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "logo_image" text`);
 
   await pool.end();
   console.log("✔ Schema up to date");

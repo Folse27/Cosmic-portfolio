@@ -29,6 +29,13 @@
       "when": 1791133137686,
       "tag": "0003_project_price",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792167942149,
+      "tag": "0004_logo_image",
+      "breakpoints": true
     }
   ]
 }

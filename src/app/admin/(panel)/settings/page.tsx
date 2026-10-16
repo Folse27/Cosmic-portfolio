@@ -46,6 +46,7 @@ export default function AdminSettingsPage() {
   const [text, setText] = useState<Record<Locale, TextForm>>({ en: EMPTY_TEXT, de: EMPTY_TEXT, ru: EMPTY_TEXT });
   const [lang, setLang] = useState<Locale>("en");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [logoImage, setLogoImage] = useState<string | null>(null);
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function AdminSettingsPage() {
           ru: toTextForm(s.translations?.ru),
         });
         setProfileImage(s.profileImage);
+        setLogoImage(s.logoImage);
         setStatus("idle");
       })
       .catch(() => setStatus("error"));
@@ -95,6 +97,7 @@ export default function AdminSettingsPage() {
         ...fromTextForm(text.en),
         translations: { de: fromTextForm(text.de), ru: fromTextForm(text.ru) },
         profileImage,
+        logoImage,
         socials: socialsFromText(form.socials),
       }),
     });
@@ -113,6 +116,10 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
+      <div className="card-panel">
+        <ImagePicker label="Logo (top left of every page) — empty shows a placeholder" value={logoImage} onChange={setLogoImage} />
+      </div>
+
       <LangTabs value={lang} onChange={setLang} incomplete={incomplete} />
 
       <div className="card-panel space-y-4">
@@ -122,7 +129,7 @@ export default function AdminSettingsPage() {
             <input className="input" value={form.name} onChange={set("name")} />
           </div>
           <div>
-            <label className="label">Header label (top left) — blank uses the name</label>
+            <label className="label">Logo alt text (read by screen readers) — blank uses the name</label>
             <input className="input" value={form.navName} placeholder={form.name} onChange={set("navName")} />
           </div>
           <div className="sm:col-span-2">

@@ -43,7 +43,7 @@ export function ImagePicker({
       <div className="flex items-start gap-3">
         <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/40">
           {value ? (
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img src={value} alt="" className="h-full w-full object-contain" />
           ) : (
             <div className="flex h-full items-center justify-center font-mono text-[10px] text-gray-600">
               no image
@@ -108,7 +108,7 @@ export function GalleryEditor({
       <span className="label">Gallery images</span>
       {value.map((url, i) => (
         <div key={`${url}-${i}`} className="flex items-center gap-3">
-          <img src={url} alt="" className="h-14 w-20 shrink-0 rounded-lg border border-white/10 object-cover" />
+          <img src={url} alt="" className="h-14 w-20 shrink-0 rounded-lg border border-white/10 bg-black/40 object-contain" />
           <p className="min-w-0 flex-1 truncate font-mono text-xs text-gray-500">{url}</p>
           <button
             type="button"

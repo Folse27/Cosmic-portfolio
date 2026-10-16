@@ -35,14 +35,25 @@ export default function ProjectCard({
       onClick={() => trackClick(`project-card:${project.slug}`)}
       className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-panel transition-all duration-300 hover:-translate-y-1 hover:border-crimson/50 hover:shadow-glow"
     >
-      <div className="aspect-[16/10] w-full overflow-hidden border-b border-white/5">
+      <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/5 bg-black">
         {project.coverImage ? (
-          <img
-            src={project.coverImage}
-            alt={project.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
+          <>
+            {/* The whole cover is always visible (object-contain); a blurred copy of the
+                same image fills the frame around it, so any aspect ratio fits the grid. */}
+            <img
+              src={project.coverImage}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-xl"
+              loading="lazy"
+            />
+            <img
+              src={project.coverImage}
+              alt={project.title}
+              className="relative h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          </>
         ) : (
           <PlaceholderCover />
         )}

@@ -54,7 +54,7 @@ export default async function SiteLayout({ children, params }: Props & { childre
   const dict = getDict(lang);
   return (
     <>
-      <Nav name={settings.navName || settings.name} lang={lang} labels={dict.nav} />
+      <Nav logo={settings.logoImage} logoAlt={settings.navName || settings.name} lang={lang} labels={dict.nav} />
       <main>{children}</main>
       <Footer name={settings.name} lang={lang} labels={dict.footer} />
     </>

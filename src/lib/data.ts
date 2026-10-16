@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   tagline: "Placeholder tagline — run `npm run db:seed`, then edit everything in /admin.",
   bio: "Placeholder bio. Sign in at /admin and open Settings to replace this text.",
   profileImage: null,
+  logoImage: null,
   email: null,
   metaDescription: "Personal portfolio — automation and web development projects.",
   skills: [],

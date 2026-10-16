@@ -59,6 +59,7 @@ export const siteSettings = pgTable("site_settings", {
   tagline: text("tagline").notNull().default(""),
   bio: text("bio").notNull().default(""),
   profileImage: text("profile_image"),
+  logoImage: text("logo_image"), // header logo; null = built-in placeholder
   email: text("email"),
   metaDescription: text("meta_description").notNull().default(""),
   skills: text("skills")
