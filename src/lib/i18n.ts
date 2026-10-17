@@ -73,20 +73,24 @@ const en = {
     title: "What happens to your customers' data",
     points: [
       {
-        title: "I don't store customer data",
-        text: "My bots keep no messages or customer data on my side. Anything that needs saving goes into the CRM your business already uses.",
+        title: "Stored only as long as needed",
+        text: "Where a bot needs to remember something, such as reply drafts or a conversation excerpt, it deletes it automatically after 7 to 30 days, and I delete a customer's data sooner on request. Backups are kept for up to 28 days. Chats and orders stay in the CRM your business already uses.",
       },
       {
-        title: "AI replies via Claude and OpenAI",
-        text: "To write a reply, the bot sends the message to the Anthropic (Claude) or OpenAI API. By default, neither provider trains its models on API data.",
+        title: "AI replies via Claude or OpenAI",
+        text: "To write a draft, the bot sends the conversation excerpt and any photos the customer sent to the Anthropic (Claude) or OpenAI API. By default, neither provider trains its models on API data.",
       },
       {
-        title: "Hosted on Render and Vercel",
-        text: "The bots run on Render or Vercel servers, and messages only pass through them.",
+        title: "Servers in Frankfurt",
+        text: "My bots, admin panels, databases and backups run on Render, Vercel and Supabase in Frankfurt (EU). Drafts reach your team in a private Telegram group that deletes messages after 30 days.",
+      },
+      {
+        title: "Access only with 2FA",
+        text: "Only admins can open the control panel and backups, with a password and a two-factor code. Risky actions such as backups or switching on the autopilot ask for the code again.",
       },
       {
         title: "A contract for EU businesses",
-        text: "For businesses in the EU, I sign a data processing agreement under Art. 28 GDPR on request and help with the note for your privacy policy.",
+        text: "For businesses in the EU, I sign a data processing agreement under Art. 28 GDPR on request, with a list of every service that handles the data, and help with the note for your privacy policy.",
       },
     ],
   },
@@ -146,20 +150,24 @@ const de: Dict = {
     title: "Was mit den Daten Ihrer Kunden passiert",
     points: [
       {
-        title: "Ich speichere keine Kundendaten",
-        text: "Meine Bots speichern Nachrichten und Kundendaten nicht bei mir. Was gespeichert werden soll, landet im CRM, das Ihr Unternehmen bereits nutzt.",
+        title: "Gespeichert wird nur so lange wie nötig",
+        text: "Muss sich ein Bot etwas merken, etwa Antwortentwürfe oder einen Gesprächsausschnitt, löscht er es nach 7 bis 30 Tagen automatisch. Auf Wunsch lösche ich die Daten einzelner Kunden auch früher. Sicherungskopien werden bis zu 28 Tage aufbewahrt. Chats und Bestellungen bleiben im CRM, das Ihr Unternehmen bereits nutzt.",
       },
       {
-        title: "KI-Antworten über Claude und OpenAI",
-        text: "Damit der Bot antworten kann, wird die Nachricht an die API von Anthropic (Claude) oder OpenAI geschickt. Beide Anbieter nutzen Daten aus ihrer API standardmäßig nicht zum Training ihrer Modelle.",
+        title: "KI-Antworten über Claude oder OpenAI",
+        text: "Für einen Antwortentwurf schickt der Bot den Gesprächsausschnitt und eventuelle Kundenfotos an die API von Anthropic (Claude) oder OpenAI. Beide Anbieter nutzen API-Daten standardmäßig nicht zum Training ihrer Modelle.",
       },
       {
-        title: "Server bei Render und Vercel",
-        text: "Die Bots laufen auf Servern von Render oder Vercel. Die Nachrichten laufen dort nur durch.",
+        title: "Server in Frankfurt",
+        text: "Bots, Admin-Panels, Datenbanken und Sicherungskopien laufen bei Render, Vercel und Supabase in Frankfurt (EU). Entwürfe erreichen Ihr Team in einer privaten Telegram-Gruppe, die Nachrichten nach 30 Tagen löscht.",
+      },
+      {
+        title: "Zugriff nur mit 2FA",
+        text: "Admin-Panel und Sicherungskopien öffnen nur Administratoren, mit Passwort und Zwei-Faktor-Code. Für heikle Aktionen wie Backups oder das Einschalten des Autopiloten wird der Code erneut abgefragt.",
       },
       {
         title: "AV-Vertrag nach DSGVO",
-        text: "Auf Wunsch schließe ich mit Ihnen einen Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO und helfe beim Hinweis für Ihre Datenschutzerklärung.",
+        text: "Auf Wunsch schließe ich mit Ihnen einen Vertrag zur Auftragsverarbeitung nach Art. 28 DSGVO, mit einer Liste aller Dienste, die Daten verarbeiten, und helfe beim Hinweis für Ihre Datenschutzerklärung.",
       },
     ],
   },
@@ -217,20 +225,24 @@ const ru: Dict = {
     title: "Что происходит с данными ваших клиентов",
     points: [
       {
-        title: "Я не храню данные клиентов",
-        text: "Мои боты не сохраняют у меня ни сообщения, ни данные клиентов. Всё, что нужно сохранить, попадает в CRM, которой ваша компания уже пользуется.",
+        title: "Храню ровно столько, сколько нужно",
+        text: "Если боту нужно что-то запомнить, например черновики ответов или отрывок переписки, он автоматически удаляет это через 7–30 дней, а по запросу я удаляю данные клиента раньше. Резервные копии хранятся до 28 дней. Чаты и заказы остаются в CRM, которой пользуется ваша компания.",
       },
       {
-        title: "Ответы ИИ через Claude и OpenAI",
-        text: "Чтобы бот мог ответить, сообщение отправляется в API Anthropic (Claude) или OpenAI. По умолчанию оба сервиса не обучают свои модели на данных из API.",
+        title: "Ответы ИИ через Claude или OpenAI",
+        text: "Чтобы написать черновик, бот отправляет отрывок переписки и фото клиента, если они есть, в API Anthropic (Claude) или OpenAI. По умолчанию оба сервиса не обучают свои модели на данных из API.",
       },
       {
-        title: "Серверы Render и Vercel",
-        text: "Боты работают на серверах Render или Vercel, сообщения только проходят через них.",
+        title: "Серверы во Франкфурте",
+        text: "Боты, админ-панели, базы данных и резервные копии работают на Render, Vercel и Supabase во Франкфурте (ЕС). Черновики приходят вашей команде в закрытую Telegram-группу, где сообщения удаляются через 30 дней.",
+      },
+      {
+        title: "Доступ только с 2FA",
+        text: "Админ-панель и резервные копии открывают только администраторы: нужен пароль и код двухфакторной аутентификации. Для рискованных действий, например резервных копий или включения автопилота, код запрашивается повторно.",
       },
       {
         title: "Договор для компаний из ЕС",
-        text: "Для компаний из ЕС по запросу заключаю договор об обработке данных по ст. 28 GDPR и помогаю с текстом для вашей политики конфиденциальности.",
+        text: "Для компаний из ЕС по запросу заключаю договор об обработке данных по ст. 28 GDPR со списком всех сервисов, которые обрабатывают данные, и помогаю с текстом для вашей политики конфиденциальности.",
       },
     ],
   },
