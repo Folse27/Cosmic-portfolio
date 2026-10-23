@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LegalPage, LegalSection, PlaceholderWarning } from "@/components/Legal";
+import { LegalPage, LegalSection } from "@/components/Legal";
 import { localePath, type Locale } from "@/lib/i18n";
-import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
+import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -25,14 +25,6 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
   const lang = (await params).lang as Locale;
   return (
     <LegalPage kicker="Datenschutzerklärung" title="Privacy Policy">
-      {ADDRESS_INCOMPLETE && (
-        <PlaceholderWarning>
-          The controller&apos;s postal address is still a placeholder. Art. 13 GDPR requires you to identify
-          yourself as the data controller. Fill it in at{" "}
-          <code className="text-yellow-400">src/lib/legal.ts</code> before sharing this site publicly.
-        </PlaceholderWarning>
-      )}
-
       <LegalSection heading="1. Controller">
         <p>The party responsible for data processing on this website is:</p>
         <p className="text-gray-300">{LEGAL.name}</p>
@@ -158,16 +150,14 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
           <li className="flex gap-3">
             <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-crimson" />
             <span>
-              <span className="text-gray-300">Neon Inc.</span> — the database in which contact-form messages
-              and the anonymous counters are stored. The database region is located in the EU. Transfers, where
-              applicable, are safeguarded by a data processing agreement incorporating the EU Standard
-              Contractual Clauses.
+              <span className="text-gray-300">Neon Inc.</span> and{" "}
+              <span className="text-gray-300">Supabase Inc.</span> — database providers in which
+              contact-form messages and the anonymous counters are stored. The database regions are located in
+              the EU. Both providers are based in the USA; transfers, where applicable, are safeguarded by data
+              processing agreements incorporating the EU Standard Contractual Clauses.
             </span>
           </li>
         </ul>
-        <p className="font-mono text-xs text-gray-500">
-          If you host or store data somewhere else, update this section to match reality.
-        </p>
       </LegalSection>
 
       <LegalSection heading="8. Fonts">

@@ -38,6 +38,7 @@ export type SectionCopyByLang = Partial<Record<"en" | "de" | "ru", Partial<Secti
 
 export type ProjectText = {
   title: string;
+  dateLabel: string; // a date range or, for services, a duration ("~1–2 weeks")
   summary: string;
   description: string;
   problems: string[];

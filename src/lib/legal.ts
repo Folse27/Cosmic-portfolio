@@ -2,10 +2,7 @@ export const LEGAL = {
   /** Your full legal name. */
   name: "Roman Plavniev",
 
-  /**
-   * Summonable postal address, one line per row.
-   * Replace the placeholders with your real street and city.
-   */
+  /** Summonable postal address, one line per row. */
   address: [
     "Street 1",
     "12345 City",
@@ -39,8 +36,6 @@ export const LEGAL = {
   },
 
   /** Date this policy was last reviewed — update it when you change anything. */
-  lastUpdated: "July 2026",
+  lastUpdated: "October 2026",
 } as const;
 
-/** True while the address still contains bracketed placeholders. */
-export const ADDRESS_INCOMPLETE = LEGAL.address.some((line) => line.includes("["));

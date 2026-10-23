@@ -19,13 +19,3 @@ export function LegalSection({ heading, children }: { heading: string; children:
     </section>
   );
 }
-
-/** Loud, unmissable banner shown while required details are still placeholders. */
-export function PlaceholderWarning({ children }: { children: ReactNode }) {
-  return (
-    <div className="rounded-xl border border-yellow-500/50 bg-yellow-500/10 p-4">
-      <p className="font-mono text-xs uppercase tracking-wider text-yellow-500">⚠ Action required before going live</p>
-      <p className="mt-2 text-sm leading-relaxed text-yellow-200/90">{children}</p>
-    </div>
-  );
-}

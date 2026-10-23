@@ -28,6 +28,7 @@ function linksFromText(s: string): LinkItem[] {
 type TextForm = Record<keyof ProjectText, string>;
 const EMPTY_TEXT: TextForm = {
   title: "",
+  dateLabel: "",
   summary: "",
   description: "",
   problems: "",
@@ -41,6 +42,7 @@ const TEXT_KEYS = Object.keys(EMPTY_TEXT) as (keyof ProjectText)[];
 function toTextForm(t: Partial<ProjectText> | undefined): TextForm {
   return {
     title: t?.title ?? "",
+    dateLabel: t?.dateLabel ?? "",
     summary: t?.summary ?? "",
     description: t?.description ?? "",
     problems: toLines(t?.problems ?? []),
@@ -54,6 +56,7 @@ function toTextForm(t: Partial<ProjectText> | undefined): TextForm {
 function fromTextForm(f: TextForm): ProjectText {
   return {
     title: f.title,
+    dateLabel: f.dateLabel,
     summary: f.summary,
     description: f.description,
     problems: fromLines(f.problems),
@@ -70,7 +73,6 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
   const [form, setForm] = useState({
     slug: project?.slug ?? "",
-    dateLabel: project?.dateLabel ?? "",
     priceAmount: project?.priceAmount?.toString() ?? "",
     priceType: (project?.priceType ?? "from") as PriceType,
     links: linksToText(project?.links ?? []),
@@ -79,7 +81,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
   });
   // Translatable text, one copy per language. "en" is the base columns.
   const [text, setText] = useState<Record<Locale, TextForm>>(() => ({
-    en: project ? toTextForm({ ...project, note: project.note ?? "" }) : EMPTY_TEXT,
+    en: project ? toTextForm({ ...project, dateLabel: project.dateLabel ?? "", note: project.note ?? "" }) : EMPTY_TEXT,
     de: toTextForm(project?.translations?.de),
     ru: toTextForm(project?.translations?.ru),
   }));
@@ -89,7 +91,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const set = (key: "slug" | "dateLabel" | "links" | "priceAmount") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const set = (key: "slug" | "links" | "priceAmount") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [key]: e.target.value });
 
   /** Props for an input bound to the current language tab. */
@@ -121,7 +123,6 @@ export default function ProjectForm({ project }: { project?: Project }) {
       ...fromTextForm(text.en),
       translations: { de: fromTextForm(text.de), ru: fromTextForm(text.ru) },
       slug: form.slug,
-      dateLabel: form.dateLabel,
       priceAmount: form.priceAmount,
       priceType: form.priceType,
       links: linksFromText(form.links),
@@ -166,8 +167,12 @@ export default function ProjectForm({ project }: { project?: Project }) {
             <input className="input" required={lang === "en"} {...tField("title")} />
           </div>
           <div>
-            <label className="label">Date label</label>
-            <input className="input" placeholder="01.05.2026 – 05.07.2026" value={form.dateLabel} onChange={set("dateLabel")} />
+            <label className="label">Date or duration<LangBadge lang={lang} /></label>
+            <input
+              className="input"
+              {...tField("dateLabel")}
+              placeholder={lang === "en" ? "01.05.2026 – 05.07.2026 or ~1–2 weeks" : text.en.dateLabel}
+            />
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

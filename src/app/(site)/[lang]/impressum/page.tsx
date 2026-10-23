@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LegalPage, LegalSection, PlaceholderWarning } from "@/components/Legal";
+import { LegalPage, LegalSection } from "@/components/Legal";
 import { localePath, type Locale } from "@/lib/i18n";
-import { ADDRESS_INCOMPLETE, LEGAL } from "@/lib/legal";
+import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Legal Notice (Impressum)",
@@ -20,14 +20,6 @@ export default async function ImpressumPage({ params }: { params: Promise<{ lang
   const lang = (await params).lang as Locale;
   return (
     <LegalPage kicker="Impressum" title="Legal Notice">
-      {ADDRESS_INCOMPLETE && (
-        <PlaceholderWarning>
-          Your postal address is still a placeholder. German law (§ 5 DDG) requires a real, summonable
-          address — street, house number, postcode and city. A P.O. box is not sufficient. Fill it in at{" "}
-          <code className="text-yellow-400">src/lib/legal.ts</code> before sharing this site publicly.
-        </PlaceholderWarning>
-      )}
-
       <LegalSection heading="Provider identification pursuant to § 5 DDG">
         <p className="text-gray-300">{LEGAL.name}</p>
         <div>

@@ -34,6 +34,7 @@ export const SETTINGS_TEXT_SPEC: Record<keyof SettingsText, FieldSpec> = {
 
 export const PROJECT_TEXT_SPEC: Record<keyof ProjectText, FieldSpec> = {
   title: { max: 200 },
+  dateLabel: { max: 60 },
   summary: { max: 600 },
   description: { max: 20000 },
   problems: { list: true, maxItems: 100, maxLen: 20000 },
