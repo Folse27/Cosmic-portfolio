@@ -5,11 +5,9 @@ out/
 *.tsbuildinfo
 next-env.d.ts
 
-# environment variables — never commit secrets
-.env
-.env.local
-.env.*.local
-.env.txt
+# environment variables — never commit secrets (any .env* file except the example)
+.env*
+!.env.example
 
 .DS_Store
 

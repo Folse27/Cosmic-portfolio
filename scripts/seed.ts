@@ -131,10 +131,11 @@ async function main() {
   const db = drizzle(pool);
 
   /* Admin user — password is hashed, never stored in plain text. */
-  const email = (process.env.ADMIN_EMAIL ?? "admin@example.com").trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD ?? "change-me-now";
-  if (!process.env.ADMIN_PASSWORD) {
-    console.warn("⚠ ADMIN_PASSWORD not set — using the insecure default. Set it in .env and re-seed.");
+  // No fallback credentials: a forgotten variable must not create a guessable admin login.
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD;
+  if (!email || !password || password.length < 12) {
+    throw new Error("Set ADMIN_EMAIL and ADMIN_PASSWORD (at least 12 characters) in .env before seeding.");
   }
   const passwordHash = bcrypt.hashSync(password, 12);
   await db

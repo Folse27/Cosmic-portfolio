@@ -1,131 +1,113 @@
-# Cosmic Portfolio — website + CMS + analytics
+# Cosmic Portfolio — portfolio site with its own CMS, three languages and cookie-free analytics
 
-A personal portfolio with a **black / deep-red cosmic theme**, an **animated hero scene** (planet, lens-flare star, orbiting swirl rings, drifting red nebula), a **built-in admin panel (CMS)** and **first-party analytics** — all in one Next.js app that deploys on Vercel.
+[![CI](https://github.com/Folse27/Cosmic-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Folse27/Cosmic-portfolio/actions/workflows/ci.yml)
 
-## Features
+**Live:** [cosmic-portfolio-lemon.vercel.app](https://cosmic-portfolio-lemon.vercel.app) · German at `/`, English at [`/en`](https://cosmic-portfolio-lemon.vercel.app/en), Russian at [`/ru`](https://cosmic-portfolio-lemon.vercel.app/ru)
 
-- **Public site** — animated hero (Canvas 2D, 60fps, `prefers-reduced-motion` static fallback), about/bio with skills, project grid with detailed case pages, contact form, scroll reveals and red-glow hover effects, fully responsive.
-- **Three languages** — German at `/` (default), English at `/en`, Russian at `/ru`, with a DE · EN · RU switch in the header, `hreflang` alternates and the right `<html lang>`. UI strings live in `src/lib/i18n.ts`; CMS text is edited per language in the admin (English is the base, empty DE/RU fields fall back to it).
-- **Admin panel at `/admin`** — email + password login (bcrypt-hashed, JWT session in an httpOnly cookie, middleware-protected routes):
-  - Projects: create, edit, delete, **reorder**, publish/unpublish, **feature**, set a **price** (from / fixed / per hour, formatted per language) (featured projects lead the homepage, the rest go under "More projects"); title, date, summary, description, problems, solution, outcomes, note, cover image, gallery, tags, external links.
-  - Settings: name, header label, title, tagline, bio, profile photo, skills, contact email, social links, SEO description.
-  - Media library: upload images (Vercel Blob) or paste any image URL.
-  - Messages: contact-form submissions land here.
-- **Analytics dashboard** — page views (per page + site-wide), clicks on project cards / contact buttons / external links, daily / weekly / monthly time-series charts. Events are stored in **your own Postgres database**: no third-party service, no cookies, no IPs, no personal data.
+![Homepage](docs/screenshot.png)
+
+My personal portfolio, built from a blank page: an animated Canvas hero, project case studies, a contact form, a private admin panel to edit everything, and visitor statistics stored in my own database. One Next.js app, deployed on Vercel.
+
+## Highlights
+
+- **Three languages without duplicating content.** German is served at the clean URLs, English and Russian under `/en` and `/ru`. The middleware decides the language; English is the base text and German/Russian are stored as per-field translations that fall back to English when empty. Every page gets `hreflang` alternates and the right `<html lang>`.
+- **A real CMS, not a template.** Projects (text per language, images, tags, links, price, featured flag, order), site settings, logo, homepage sections and an inbox for contact messages — all edited in `/admin` with EN / DE / RU tabs.
+- **Cookie-free analytics.** Page views and clicks are counted in the site's own Postgres database: no cookies, no IP addresses, no third-party scripts, so no cookie banner is needed.
+- **Server-side validation everywhere.** Every admin write goes through a sanitizer that keeps only known fields and languages, caps lengths and drops empty values — the client is never trusted.
+- **Safe deploys.** The build checks required environment variables and adds new database columns idempotently before `next build`, so code and schema can't drift apart.
+- **Prices in the visitor's format.** One amount in euros becomes “ab 800 €”, “от 800 €” or “from €800” via `Intl.NumberFormat`.
+- **Accessible motion.** The hero animation (Canvas 2D, 60 fps) respects `prefers-reduced-motion`, can be switched off and has a static fallback image.
+
+## How it works
+
+![Architecture](docs/architecture.png)
 
 ## Tech stack
 
-Next.js 15 (App Router, TypeScript) · Tailwind CSS · Drizzle ORM · PostgreSQL (Neon / Supabase / Vercel Postgres) · `jose` + `bcryptjs` auth · Vercel Blob (uploads) · Recharts (dashboard).
+Next.js 15 (App Router, TypeScript strict) · Tailwind CSS · Drizzle ORM · PostgreSQL (Neon / Supabase) · `jose` (JWT sessions) + `bcryptjs` · Vercel Blob (image uploads) · Recharts (dashboard) · Vitest + GitHub Actions (tests, CI)
+
+## Design decisions
+
+- **`force-dynamic` rendering.** All content comes from the CMS, so pages render per request and edits are live immediately. The trade-off is one database query per page view; on-demand revalidation (cache the pages, revalidate them when the admin saves) is the natural next step if traffic grows.
+- **Plain `<img>` instead of `next/image`.** Covers and logos are arbitrary URLs (uploads or pasted links), and covers are deliberately shown uncropped over a blurred copy of themselves. Images are lazy-loaded.
+- **`ensure-schema.ts` next to Drizzle migrations.** Migrations are generated with drizzle-kit for history; the build additionally applies every additive change with `ADD COLUMN IF NOT EXISTS`, so a deploy works no matter how the database was first created.
+- **Translations as JSON, English in columns.** Adding a language field doesn't need a migration, and a missing translation degrades to English instead of an empty page.
+- **Legal details from environment variables.** The Impressum data (required by German law) is configured in the hosting settings, so the repository contains no personal data.
 
 ## Project structure
 
 ```
+├── .github/workflows/ci.yml     # type check + tests on every push
+├── docs/                        # screenshot, architecture diagram
 ├── drizzle/                     # generated SQL migrations
-├── public/images/               # hero fallback + seeded project covers
 ├── scripts/
+│   ├── check-env.ts             # fails the production build if required variables are missing
 │   ├── ensure-schema.ts         # idempotent column additions, runs before every build
 │   ├── migrate.ts               # apply migrations (alternative to db:push)
-│   └── seed.ts                  # admin user + settings + 6 projects
+│   └── seed.ts                  # admin user + placeholder content
 ├── src/
 │   ├── app/
-│   │   ├── (site)/              # public pages (home, /projects/[slug])
-│   │   ├── admin/
-│   │   │   ├── login/           # sign-in page (public)
-│   │   │   └── (panel)/         # dashboard, projects, messages, media, settings
-│   │   └── api/                 # auth, projects, settings, upload, images,
-│   │                            # messages, contact, track, analytics
-│   ├── components/              # CosmicHero, ProjectCard, admin forms…
-│   ├── db/                      # drizzle schema + client
-│   ├── lib/                     # auth, data helpers, analytics client
-│   └── middleware.ts            # protects /admin/*
+│   │   ├── (site)/[lang]/       # public pages: home, projects/[slug], impressum, privacy
+│   │   ├── admin/               # login + panel: dashboard, projects, messages, media, settings
+│   │   └── api/                 # auth, projects, settings, upload, images, messages, contact, track, analytics
+│   ├── components/              # CosmicHero, ProjectCard, Nav, admin forms…
+│   ├── db/                      # Drizzle schema + client
+│   ├── lib/                     # i18n, localization, sanitizers, auth, data access
+│   └── middleware.ts            # language routing + admin guard
+├── tests/                       # Vitest unit tests
 └── .env.example
 ```
 
-## 1 · Local setup
+## Local setup
 
-Requirements: **Node.js ≥ 20** and a PostgreSQL database (a free [Neon](https://neon.tech) or [Supabase](https://supabase.com) project is perfect; local Postgres also works).
+Requirements: **Node.js ≥ 20** and a PostgreSQL database (a free [Neon](https://neon.tech) or [Supabase](https://supabase.com) project works; so does local Postgres).
 
 ```bash
 npm install
-cp .env.example .env        # then fill in the values (see below)
+cp .env.example .env        # fill in the values (see below)
 npm run db:push             # create the tables
-npm run db:seed             # admin user + placeholder content + 6 projects
-npm run dev                 # http://localhost:3000
+npm run db:seed             # admin user + placeholder content
+npm run dev                 # http://localhost:3000, admin at /admin/login
 ```
 
-Sign in at **http://localhost:3000/admin/login** with your `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+### Scripts
+
+| Script | What it does |
+| --- | --- |
+| `npm run dev` / `build` / `start` | Next.js development, production build (with env check + schema step), production server |
+| `npm test` | Vitest unit tests |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run db:push` / `db:migrate` / `db:generate` | create tables / apply tracked migrations / generate a migration |
+| `npm run db:seed` | create or update the admin user and placeholder content |
 
 ### Environment variables
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `DATABASE_URL` | ✅ | Postgres connection string. Use the **pooled** string on serverless (Neon "pooled", Supabase "Session pooler"). |
-| `AUTH_SECRET` | ✅ | Signs admin session tokens. Generate: `openssl rand -base64 32` |
-| `ADMIN_EMAIL` | ✅ (seed) | Admin login email — read by `npm run db:seed`. |
-| `ADMIN_PASSWORD` | ✅ (seed) | Admin password — hashed by the seed, never stored in plain text. |
-| `BLOB_READ_WRITE_TOKEN` | optional | Enables file uploads (created automatically when you add a Vercel Blob store). Without it, paste image URLs instead. |
+| `DATABASE_URL` | ✅ | Postgres connection string (use the pooled one on serverless). |
+| `AUTH_SECRET` | ✅ | Signs admin sessions. Generate with `openssl rand -base64 32`. |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | ✅ for seeding | Admin login, read by `npm run db:seed`; the password is stored only as a bcrypt hash. |
+| `LEGAL_NAME`, `LEGAL_ADDRESS`, `LEGAL_EMAIL` | ✅ in production | Impressum / privacy policy details. Separate address lines with `\|`. |
+| `LEGAL_PHONE`, `LEGAL_VAT_ID` | optional | Shown on the Impressum when set. |
+| `BLOB_READ_WRITE_TOKEN` | optional | Enables image uploads (added automatically with a Vercel Blob store). |
+| `NEXT_PUBLIC_SITE_URL` | optional | Public base URL for canonical and Open Graph links. |
 
-**Changing the admin password later:** set a new `ADMIN_PASSWORD` and run `npm run db:seed` again — it updates the hash in place and never overwrites content you've edited in the CMS.
+## Deploy on Vercel
 
-## 2 · Using the admin panel
-
-Everything the site shows is editable without touching code:
-
-- **Settings** → your name, title, tagline, bio (blank line = new paragraph), profile photo, skills, contact email, social links (`Label | https://url`, one per line).
-- **Projects** → the six seeded projects are normal CMS entries: edit, reorder with the arrows, unpublish, or delete them. Lists (problems/outcomes) are one item per line; links use `Label | https://url`.
-- **Media** → upload an image, click **Copy URL**, paste it into any image field. If uploads are not configured yet, external image URLs work everywhere.
-- **Dashboard** → analytics (see below). **Messages** → contact-form submissions.
-
-## 3 · Analytics — what is tracked
-
-| Event | When | Stored as |
-| --- | --- | --- |
-| `view` | every public page load / navigation | path + timestamp |
-| `click` | project cards, hero CTAs, contact buttons, social links, project external links, form submit | element id + path + timestamp |
-
-Only those fields are stored — no cookies, no IP addresses, no user agents. Admin pages are never tracked. Events post to `/api/track` (uses `sendBeacon` so clicks on outbound links are not lost) and the dashboard aggregates them with range (7d/30d/90d/1y/all) and granularity (daily/weekly/monthly) controls.
-
-## 4 · Deploy: GitHub → Vercel
-
-1. **Push to GitHub**
-   ```bash
-   git init && git add -A && git commit -m "Initial commit"
-   git remote add origin https://github.com/<you>/<repo>.git
-   git push -u origin main
-   ```
-2. **Create the database** (pick one):
-   - *Neon via Vercel:* Vercel Dashboard → your project → **Storage → Create Database → Neon (Postgres)** — `DATABASE_URL` is added automatically.
-   - *Supabase:* create a project → **Connect** → copy the **Session pooler** connection string → you'll add it as `DATABASE_URL` in step 4.
-3. **Import the repo in Vercel** — [vercel.com/new](https://vercel.com/new) → select the repo → framework auto-detects Next.js. Don't deploy yet if you still need env vars.
-4. **Add environment variables** (Project → Settings → Environment Variables): `DATABASE_URL` (if not auto-added), `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-5. **Enable uploads (optional):** Project → **Storage → Create → Blob** — this injects `BLOB_READ_WRITE_TOKEN` automatically.
-6. **Create tables + seed** — run once from your machine against the production DB:
-   ```bash
-   # temporarily put the PRODUCTION DATABASE_URL (+ your admin creds) in .env
-   npm run db:push
-   npm run db:seed
-   ```
-   (Or use `npm run db:migrate` to apply the tracked SQL in `drizzle/` instead of `db:push`.)
-7. **Deploy** — Vercel builds on every push to `main`. Your site is live at `https://<project>.vercel.app`, admin at `/admin`.
-
-## 5 · Custom domain via TheHost
-
-1. In **Vercel → Project → Settings → Domains**, add `yourdomain.com` (and `www.yourdomain.com`). Vercel shows the exact records it expects.
-2. In your **TheHost** control panel, open DNS management for the domain and add:
-   - `A` record — host `@` → `76.76.21.21`
-   - `CNAME` record — host `www` → `cname.vercel-dns.com`
-   *(Alternative: switch the domain's nameservers to `ns1.vercel-dns.com` / `ns2.vercel-dns.com` and manage DNS inside Vercel.)*
-3. Wait for propagation (minutes → a few hours). Vercel verifies the records and issues SSL automatically.
-
-## 6 · Extending
-
-- **New project field** → add the column in `src/db/schema.ts`, run `npm run db:generate` (make the SQL `ADD COLUMN IF NOT EXISTS`) and add the same statement to `scripts/ensure-schema.ts` so Vercel applies it on the next deploy, whitelist it in `src/lib/project-payload.ts`, add the input in `src/components/admin/ProjectForm.tsx`, render it in `src/app/(site)/[lang]/projects/[slug]/page.tsx`. If it is text visitors read, also add it to `ProjectText` / `PROJECT_TEXT_SPEC` (`src/lib/localize.ts`) so it can be translated.
-- **New tracked element** → call `trackClick("your:element-id")` from `@/lib/track` — it appears in the dashboard automatically.
-- **Hero tuning** → all scene parameters (ring count, colors, speeds, nebula placement) live at the top of `src/components/CosmicHero.tsx`.
+1. Import the repository at [vercel.com/new](https://vercel.com/new); Next.js is detected automatically.
+2. Create a database (Vercel → Storage → Neon, or a Supabase project) and set `DATABASE_URL`.
+3. Add the remaining variables from the table above. Optionally add a Blob store for uploads.
+4. Run `npm run db:push` and `npm run db:seed` once against the production database.
+5. Every push to `main` deploys. A build with missing required variables fails and leaves the previous deployment online.
 
 ## Security notes
 
-- Sessions are signed JWTs in an `httpOnly`, `SameSite=Lax`, `Secure` cookie; every `/admin` route is checked in middleware and every mutating API re-checks the session server-side.
-- Passwords are bcrypt-hashed (cost 12). Login responses don't reveal whether the email exists.
-- The contact form has a honeypot field and length limits; the tracking endpoint validates and caps every field and never stores personal data.
-- Keep `AUTH_SECRET` long and random, and never commit `.env`.
+- Admin sessions are signed JWTs in an `httpOnly`, `SameSite=Lax`, `Secure` cookie. The middleware guards every `/admin` route, and every mutating API route re-checks the session on the server.
+- Passwords are bcrypt-hashed (cost 12); login responses take the same time whether or not the email exists.
+- The seed script refuses to run without an admin password of at least 12 characters — there are no default credentials.
+- The contact form has spam protection and length limits; the tracking endpoint validates and caps every field and never stores personal data.
+- No secrets live in the repository; `.env*` files are ignored except `.env.example`.
+
+---
+
+© 2026 Roman Plavniev. The source is published to show my work; all rights reserved.

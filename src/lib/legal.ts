@@ -1,41 +1,38 @@
-export const LEGAL = {
-  /** Your full legal name. */
-  name: "Roman Plavniev",
+/**
+ * Provider details for the Impressum and the privacy policy.
+ *
+ * The personal details come from environment variables, so they live in the
+ * hosting settings instead of the repository. scripts/check-env.ts fails the
+ * production build when a required one is missing, so a deploy can never ship
+ * the bracketed placeholders below.
+ */
+const env = (key: string) => process.env[key]?.trim() || null;
 
-  /** Summonable postal address, one line per row. */
-  address: [
-    "Street 1",
-    "12345 City",
-    "Germany",
-  ],
+export const LEGAL = {
+  /** Full legal name. */
+  name: env("LEGAL_NAME") ?? "[LEGAL_NAME]",
+
+  /** Summonable postal address; lines are separated by "|" in LEGAL_ADDRESS. */
+  address: (env("LEGAL_ADDRESS") ?? "[LEGAL_ADDRESS]")
+    .split("|")
+    .map((line) => line.trim())
+    .filter(Boolean),
 
   /** Must be a real, monitored address — automated-reply-only is not allowed. */
-  email: "you@example.com",
+  email: env("LEGAL_EMAIL") ?? "[LEGAL_EMAIL]",
 
-  /**
-   * Optional but recommended: German law expects you to be reachable
-   * "quickly and directly". Email alone is usually accepted, but a phone
-   * number is safer. Leave as null to hide the row entirely.
-   */
-  phone: "+49 000 0000000" as string | null,
+  /** Optional; the row is hidden when LEGAL_PHONE is not set. */
+  phone: env("LEGAL_PHONE"),
 
-  /**
-   * VAT ID (Umsatzsteuer-Identifikationsnummer), if you have one.
-   * Leave null if you are not VAT-registered.
-   */
-  vatId: null as string | null,
+  /** Optional VAT ID (Umsatzsteuer-Identifikationsnummer); hidden when not set. */
+  vatId: env("LEGAL_VAT_ID"),
 
-  /**
-   * Your competent data protection supervisory authority — this depends on
-   * the federal state you live in. For North Rhine-Westphalia it is the
-   * LDI NRW (shown below). Change it if you live in a different state.
-   */
+  /** Competent data protection authority — depends on the federal state (here: North Rhine-Westphalia). */
   supervisoryAuthority: {
     name: "Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen (LDI NRW)",
     url: "https://www.ldi.nrw.de",
   },
 
-  /** Date this policy was last reviewed — update it when you change anything. */
+  /** Date the privacy policy was last reviewed — update it when anything changes. */
   lastUpdated: "October 2026",
-} as const;
-
+};
