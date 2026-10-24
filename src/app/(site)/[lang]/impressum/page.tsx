@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/Legal";
-import { localePath, type Locale } from "@/lib/i18n";
+import { getDict, localePath, type Locale } from "@/lib/i18n";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
@@ -18,8 +18,9 @@ export const metadata: Metadata = {
 export default async function ImpressumPage({ params }: { params: Promise<{ lang: string }> }) {
   // The [lang] layout has already rejected unknown languages.
   const lang = (await params).lang as Locale;
+  const t = getDict(lang).legal;
   return (
-    <LegalPage kicker="Impressum" title="Legal Notice">
+    <LegalPage kicker={t.impressumKicker} title="Legal Notice" note={t.englishOnly}>
       <LegalSection heading="Provider identification pursuant to § 5 DDG">
         <p className="text-gray-300">{LEGAL.name}</p>
         <div>

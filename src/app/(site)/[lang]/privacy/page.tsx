@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/Legal";
-import { localePath, type Locale } from "@/lib/i18n";
+import { getDict, localePath, type Locale } from "@/lib/i18n";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
@@ -23,8 +23,9 @@ export const metadata: Metadata = {
 export default async function PrivacyPage({ params }: { params: Promise<{ lang: string }> }) {
   // The [lang] layout has already rejected unknown languages.
   const lang = (await params).lang as Locale;
+  const t = getDict(lang).legal;
   return (
-    <LegalPage kicker="Datenschutzerklärung" title="Privacy Policy">
+    <LegalPage kicker={t.privacyKicker} title="Privacy Policy" note={t.englishOnly}>
       <LegalSection heading="1. Controller">
         <p>The party responsible for data processing on this website is:</p>
         <p className="text-gray-300">{LEGAL.name}</p>

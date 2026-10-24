@@ -26,7 +26,9 @@ export function localePath(lang: Locale, path: string): string {
 /** "/en/projects/x" → { lang: "en", path: "/projects/x" }; unprefixed paths are German. */
 export function splitLocale(pathname: string): { lang: Locale; path: string } {
   const first = pathname.split("/")[1];
-  if (isLocale(first) && first !== DEFAULT_LOCALE) {
+  // "/de/..." is the internal path of cached German pages (the middleware
+  // rewrites "/x" to "/de/x"), so the default locale is stripped as well.
+  if (isLocale(first)) {
     return { lang: first, path: pathname.slice(first.length + 1) || "/" };
   }
   return { lang: DEFAULT_LOCALE, path: pathname };
@@ -113,6 +115,8 @@ const en = {
     error: "Something went wrong. Try again or use email.",
   },
   footer: { legal: "Legal Notice", privacy: "Privacy Policy" },
+  /** The legal texts exist in English only; other languages say so instead of looking half-translated. */
+  legal: { privacyKicker: "GDPR", impressumKicker: "Impressum", englishOnly: "" },
   meta: { portfolio: "Portfolio" },
 };
 
@@ -190,6 +194,11 @@ const de: Dict = {
     error: "Etwas ist schiefgelaufen. Bitte erneut versuchen oder per E-Mail schreiben.",
   },
   footer: { legal: "Impressum", privacy: "Datenschutz" },
+  legal: {
+    privacyKicker: "Datenschutzerklärung",
+    impressumKicker: "Impressum",
+    englishOnly: "Diese Seite ist derzeit nur auf Englisch verfügbar.",
+  },
   meta: { portfolio: "Portfolio" },
 };
 
@@ -265,6 +274,11 @@ const ru: Dict = {
     error: "Что-то пошло не так. Попробуйте ещё раз или напишите на e-mail.",
   },
   footer: { legal: "Правовая информация", privacy: "Конфиденциальность" },
+  legal: {
+    privacyKicker: "Конфиденциальность",
+    impressumKicker: "Impressum",
+    englishOnly: "Эта страница пока доступна только на английском языке.",
+  },
   meta: { portfolio: "Портфолио" },
 };
 

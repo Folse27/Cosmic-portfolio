@@ -7,6 +7,8 @@ import { track } from "@/lib/track";
 /**
  * Fires one "view" event per navigation. Admin routes are never tracked.
  * A ref guards against double-fires (React strict mode remounts in dev).
+ * The recorded path is the browser URL: on cached German pages usePathname()
+ * can report the internal "/de/..." path the middleware rewrote to.
  */
 export default function AnalyticsTracker() {
   const pathname = usePathname();
@@ -16,7 +18,7 @@ export default function AnalyticsTracker() {
     if (!pathname || pathname.startsWith("/admin")) return;
     if (last.current === pathname) return;
     last.current = pathname;
-    track("view", { path: pathname });
+    track("view", { path: window.location.pathname });
   }, [pathname]);
 
   return null;

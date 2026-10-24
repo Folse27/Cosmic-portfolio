@@ -27,6 +27,11 @@ describe("splitLocale", () => {
     expect(splitLocale("/projects/x")).toEqual({ lang: "de", path: "/projects/x" });
   });
 
+  it("strips the internal /de prefix of cached German pages", () => {
+    expect(splitLocale("/de/privacy")).toEqual({ lang: "de", path: "/privacy" });
+    expect(splitLocale("/de")).toEqual({ lang: "de", path: "/" });
+  });
+
   it("is the inverse of localePath", () => {
     for (const lang of ["de", "en", "ru"] as const) {
       expect(splitLocale(localePath(lang, "/projects/x"))).toEqual({ lang, path: "/projects/x" });
