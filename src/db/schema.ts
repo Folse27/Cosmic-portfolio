@@ -176,6 +176,14 @@ export const mediaImages = pgTable("media_images", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+/* ── Rate limiting (see src/lib/rate-limit.ts) ─────────────────────────── */
+
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(), // bucket + hashed client address, never the raw IP
+  count: integer("count").notNull(),
+  resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+});
+
 /* ── Inferred row types ───────────────────────────────────────────────── */
 
 export type Project = typeof projects.$inferSelect;

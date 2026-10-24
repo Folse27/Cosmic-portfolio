@@ -5,6 +5,7 @@ import { projects } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
 import { slugify } from "@/lib/data";
 import { projectPayload } from "@/lib/project-payload";
+import { revalidateSite } from "@/lib/revalidate";
 
 /** GET /api/projects            → published projects (public)
  *  GET /api/projects?all=1      → every project, for the admin list       */
@@ -56,5 +57,6 @@ export async function POST(req: Request) {
     .values({ ...data, slug, sortOrder: nextOrder })
     .returning();
 
+  revalidateSite();
   return NextResponse.json(created, { status: 201 });
 }

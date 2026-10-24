@@ -1,10 +1,4 @@
-import type { Metadata } from "next";
 import AdminNav from "@/components/admin/AdminNav";
-
-export const metadata: Metadata = {
-  title: "Admin — Portfolio",
-  robots: { index: false, follow: false },
-};
 
 /**
  * Shell for every admin page. Access is enforced by src/middleware.ts,

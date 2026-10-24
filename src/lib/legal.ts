@@ -12,9 +12,9 @@ export const LEGAL = {
   /** Full legal name. */
   name: env("LEGAL_NAME") ?? "[LEGAL_NAME]",
 
-  /** Summonable postal address; lines are separated by "|" in LEGAL_ADDRESS. */
+  /** Summonable postal address; lines are separated by "|" (or "\|") in LEGAL_ADDRESS. */
   address: (env("LEGAL_ADDRESS") ?? "[LEGAL_ADDRESS]")
-    .split("|")
+    .split(/\\?\|/)
     .map((line) => line.trim())
     .filter(Boolean),
 

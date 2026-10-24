@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { projects } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
+import { revalidateSite } from "@/lib/revalidate";
 
 /** PUT /api/projects/reorder  { ids: string[] } — index becomes sortOrder. */
 export async function PUT(req: Request) {
@@ -21,5 +22,6 @@ export async function PUT(req: Request) {
   await Promise.all(
     ids.map((id, index) => db.update(projects).set({ sortOrder: index }).where(eq(projects.id, id))),
   );
+  revalidateSite();
   return NextResponse.json({ ok: true });
 }

@@ -28,6 +28,7 @@ async function main() {
   await pool.query(`ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "price_type" text`);
   await pool.query(`ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "logo_image" text`);
   await pool.query(`ALTER TABLE "site_settings" ADD COLUMN IF NOT EXISTS "section_copy" jsonb DEFAULT '{}'::jsonb NOT NULL`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS "rate_limits" ("key" text PRIMARY KEY NOT NULL, "count" integer NOT NULL, "reset_at" timestamp with time zone NOT NULL)`);
 
   await pool.end();
   console.log("✔ Schema up to date");

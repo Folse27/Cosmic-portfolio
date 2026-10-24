@@ -4,12 +4,16 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { adminUsers } from "@/db/schema";
 import { createSession } from "@/lib/auth";
+import { rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 // Constant-shape comparison target so unknown emails take the same time
 // as wrong passwords (avoids trivial account enumeration).
 const DUMMY_HASH = "$2a$12$C6UzMDM.H6dfI/f/IKcEeO7ZBpDLh0i7a3ZbXlqDe1cJqDq0y1u5e";
 
 export async function POST(req: Request) {
+  const wait = await rateLimit(req, "login");
+  if (wait) return tooManyRequests(wait, "Too many login attempts. Please wait and try again.");
+
   let body: { email?: string; password?: string };
   try {
     body = await req.json();

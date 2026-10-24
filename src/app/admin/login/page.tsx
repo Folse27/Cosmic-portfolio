@@ -69,9 +69,6 @@ export default function AdminLoginPage() {
           </button>
           {error && <p className="text-center font-mono text-xs text-crimson-bright">{error}</p>}
         </form>
-        <p className="mt-6 text-center font-mono text-[11px] text-gray-600">
-          Credentials come from ADMIN_EMAIL / ADMIN_PASSWORD via <code>npm run db:seed</code>
-        </p>
       </div>
     </div>
   );

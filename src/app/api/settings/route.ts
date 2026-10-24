@@ -4,6 +4,7 @@ import { siteSettings, type LinkItem, type SettingsText } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
 import { DEFAULT_SETTINGS, getSettings } from "@/lib/data";
 import { SETTINGS_TEXT_SPEC, sanitizeTranslations } from "@/lib/localize";
+import { revalidateSite } from "@/lib/revalidate";
 import { sanitizeSectionCopy } from "@/lib/section-copy";
 
 export async function GET() {
@@ -60,5 +61,6 @@ export async function PUT(req: Request) {
     .onConflictDoUpdate({ target: siteSettings.id, set: values })
     .returning();
 
+  revalidateSite();
   return NextResponse.json(saved);
 }

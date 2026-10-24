@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { contactMessages } from "@/db/schema";
+import { rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const wait = await rateLimit(req, "contact");
+  if (wait) return tooManyRequests(wait, "Too many messages. Please try again later or use email.");
+
   let body: { name?: string; email?: string; message?: string; company?: string };
   try {
     body = await req.json();

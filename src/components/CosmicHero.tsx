@@ -287,7 +287,7 @@ function startScene(
     for (const n of nebulae) {
       // slow drift with wrap-around
       let x = n.x + n.vx * t + px * 1.6;
-      let y = n.y + n.vy * t + py * 1.6;
+      const y = n.y + n.vy * t + py * 1.6;
       const span = w * 1.4;
       x = ((((x + w * 0.2) % span) + span) % span) - w * 0.2;
       const rot = n.rot + n.rotSp * t;

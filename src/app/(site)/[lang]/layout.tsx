@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import "../../globals.css";
+import { fontVariables } from "../../fonts";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { getSettings } from "@/lib/data";
@@ -7,8 +10,16 @@ import { getDict, isLocale, localeAlternates, localePath, LOCALES, OG_LOCALE } f
 import { localizeSettings } from "@/lib/localize";
 import { OG_IMAGE, SITE_URL } from "@/lib/site-url";
 
-// Content is CMS-managed, so render per-request instead of at build time.
-export const dynamic = "force-dynamic";
+/**
+ * Pages are rendered once and cached. Every admin save calls revalidateSite()
+ * (src/lib/revalidate.ts), so edits are live immediately; the hourly
+ * revalidation is only a safety net.
+ */
+export const revalidate = 3600;
+
+export function generateStaticParams() {
+  return LOCALES.map((lang) => ({ lang }));
+}
 
 type Props = { params: Promise<{ lang: string }> };
 
@@ -53,10 +64,14 @@ export default async function SiteLayout({ children, params }: Props & { childre
   const settings = await getSettings();
   const dict = getDict(lang);
   return (
-    <>
-      <Nav logo={settings.logoImage} logoAlt={settings.navName || settings.name} lang={lang} labels={dict.nav} />
-      <main>{children}</main>
-      <Footer name={settings.name} lang={lang} labels={dict.footer} />
-    </>
+    <html lang={lang} className={fontVariables}>
+      <body>
+        {/* Records a "view" event on every route change. */}
+        <AnalyticsTracker />
+        <Nav logo={settings.logoImage} logoAlt={settings.navName || settings.name} lang={lang} labels={dict.nav} />
+        <main>{children}</main>
+        <Footer name={settings.name} lang={lang} labels={dict.footer} />
+      </body>
+    </html>
   );
 }

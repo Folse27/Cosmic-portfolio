@@ -1,12 +1,16 @@
 import { db } from "@/db";
 import { analyticsEvents } from "@/db/schema";
+import { rateLimit } from "@/lib/rate-limit";
 
 /**
  * Public, privacy-friendly event sink.
  * Stores only: event type, page path, optional element id, timestamp.
  * No cookies, no IP addresses, no user agents, no personal data.
+ * Rate-limited per client so a script cannot inflate the statistics.
  */
 export async function POST(req: Request) {
+  if (await rateLimit(req, "track")) return new Response(null, { status: 429 });
+
   let body: { type?: string; path?: string; elementId?: string };
   try {
     body = JSON.parse(await req.text()); // sendBeacon posts text/plain

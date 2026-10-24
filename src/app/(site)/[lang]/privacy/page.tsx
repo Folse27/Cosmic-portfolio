@@ -66,6 +66,12 @@ export default async function PrivacyPage({ params }: { params: Promise<{ lang: 
           hosting provider (see section 7) for a short period and are not merged with other data or used to
           identify you.
         </p>
+        <p>
+          To protect the contact form, the login and the visitor counter against abuse, the site also keeps a
+          short-lived request counter. It stores a <span className="text-gray-300">one-way hash</span> of your
+          IP address combined with a secret key, never the address itself, and is deleted automatically about
+          an hour after its time window ends. The legal basis is the same legitimate interest as above.
+        </p>
       </LegalSection>
 
       <LegalSection heading="4. Contact form">

@@ -1,8 +1,4 @@
-import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { JetBrains_Mono, Manrope, Space_Grotesk, Unbounded } from "next/font/google";
-import "./globals.css";
-import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 /**
  * Fonts are downloaded at BUILD time and served from our own domain.
@@ -44,21 +40,5 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "Automation & web development portfolio.",
-};
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Set by src/middleware.ts for public pages; the admin panel is English.
-  const lang = (await headers()).get("x-locale") ?? "en";
-  return (
-    <html lang={lang} className={`${display.variable} ${sans.variable} ${sansCyrillic.variable} ${mono.variable}`}>
-      <body>
-        {/* Records a "view" event on every route change (admin excluded). */}
-        <AnalyticsTracker />
-        {children}
-      </body>
-    </html>
-  );
-}
+/** CSS variables for every font, applied on <html> by both root layouts. */
+export const fontVariables = [display, sans, sansCyrillic, mono].map((f) => f.variable).join(" ");

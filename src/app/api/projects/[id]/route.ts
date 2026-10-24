@@ -5,6 +5,7 @@ import { projects } from "@/db/schema";
 import { getSession, unauthorized } from "@/lib/auth";
 import { slugify } from "@/lib/data";
 import { projectPayload } from "@/lib/project-payload";
+import { revalidateSite } from "@/lib/revalidate";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -38,6 +39,7 @@ export async function PUT(req: Request, { params }: Params) {
   try {
     const [updated] = await db.update(projects).set(update).where(eq(projects.id, id)).returning();
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    revalidateSite();
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Slug already in use" }, { status: 409 });
@@ -48,5 +50,6 @@ export async function DELETE(_req: Request, { params }: Params) {
   if (!(await getSession())) return unauthorized();
   const { id } = await params;
   await db.delete(projects).where(eq(projects.id, id));
+  revalidateSite();
   return NextResponse.json({ ok: true });
 }

@@ -9,8 +9,6 @@ import { formatPrice, getDict, localePath, type Locale } from "@/lib/i18n";
 import { localizeProject, localizeSettings } from "@/lib/localize";
 import { resolveSectionCopy } from "@/lib/section-copy";
 
-export const dynamic = "force-dynamic";
-
 /** Section heading: mono kicker + display title, consistent across the page. */
 function SectionHeading({ kicker, title }: { kicker: string; title: string }) {
   return (

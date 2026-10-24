@@ -3,12 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/Reveal";
 import TrackedLink from "@/components/TrackedLink";
-import { getProjectBySlug, getSettings } from "@/lib/data";
+import { getProjectBySlug, getPublishedProjects, getSettings } from "@/lib/data";
 import { formatPrice, getDict, isLocale, localeAlternates, localePath, LOCALES, OG_LOCALE } from "@/lib/i18n";
 import { localizeProject } from "@/lib/localize";
 import { OG_IMAGE } from "@/lib/site-url";
 
-export const dynamic = "force-dynamic";
+/** Published projects are pre-rendered at build time; newer ones on their first visit. */
+export async function generateStaticParams() {
+  const projects = await getPublishedProjects();
+  return projects.map((p) => ({ slug: p.slug }));
+}
 
 type Params = { params: Promise<{ lang: string; slug: string }> };
 
